@@ -10,4 +10,4 @@ Content-Type: application/json
 ### Demo
 GET http://localhost:8080/exam/demo
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InhpYW95aSIsImV4cCI6MTY4ODM3MjIyN30.oLySg_AQqKOOV7kIh-ray_c8l0aubg0xjY273MvV8EU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InhpYW95aSIsImV4cCI6MTY4ODM4NjUwN30.bOUGTInnwdlStb57ZmnaGs5nFrjek2L13_GOfizFprQ

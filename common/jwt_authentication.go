@@ -23,17 +23,17 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "API token required"})
 			return
 		}
-		// 验证 token 是否有效
-		claims, err := ExtractJwt(token)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err})
-			return
-		}
-		// 判断username
-		if username := claims.Username; username != "xiaoyi" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "The user not found"})
-			return
-		}
+		//// 验证 token 是否有效
+		//claims, err := ExtractJwt(token)
+		//if err != nil {
+		//	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err})
+		//	return
+		//}
+		//// 判断username
+		//if username := claims.Username; username != "xiaoyi" {
+		//	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "The user not found"})
+		//	return
+		//}
 		// 下一步
 		c.Next()
 	}
