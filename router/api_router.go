@@ -12,6 +12,7 @@ func Router() *gin.Engine {
 	// 公共接口
 	public := r.Group("/auth")
 	public.POST("/login", interfaces.Login())
+	public.POST("/register", interfaces.Register())
 	// 受保护的接口
 	protected := r.Group("/exam")
 	protected.Use(common.TokenAuthMiddleware())

@@ -1,38 +1,28 @@
 package interfaces
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/common"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ioc"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/vo"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-// LoginDto 登录请求体
-type LoginDto struct {
-	Name     string `json:"name"`
-	Password string `json:"password"`
-}
-
-// LoginResponse 登录响应体
-type LoginResponse struct {
-	Authentication string `json:"authentication"`
-}
-
 // Login 登录接口
 func Login() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var loginDto LoginDto
+		var loginDto vo.LoginDto
 		err := ctx.ShouldBindJSON(&loginDto)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
 			return
 		}
-		if loginDto.Name != "xiaoyi" || loginDto.Password != "123456" {
-			ctx.JSON(http.StatusInternalServerError, errors.New("登录名称或密码错误").Error())
+		loginResponse, err := ioc.DIContainer.UserService.Login(&loginDto)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
-		token := common.CreateNewToken(loginDto.Name)
-		ctx.JSON(http.StatusOK, LoginResponse{Authentication: common.Header + token})
+		ctx.JSON(http.StatusOK, loginResponse)
 	}
 }
 
@@ -40,5 +30,23 @@ func Login() gin.HandlerFunc {
 func Demo() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, "hello demo")
+	}
+}
+
+// Register 注册
+func Register() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var register vo.RegisterRequest
+		err := ctx.ShouldBindJSON(&register)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
+			return
+		}
+		response, err := ioc.DIContainer.UserService.Register(&register)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
+			return
+		}
+		ctx.JSON(http.StatusOK, response)
 	}
 }
