@@ -2,7 +2,9 @@ package orm
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/models"
+	_ "database/sql"
 	"github.com/go-xorm/xorm"
+	_ "github.com/lib/pq"
 	"log"
 	"time"
 	"xorm.io/core"
@@ -14,7 +16,7 @@ var (
 )
 
 func NewXorm() *xorm.Engine {
-	connStr := "postgres://postgres:xiaoyi@localhost/questionnaire_survey?sslmode=verify-full"
+	connStr := "postgres://postgres:xiaoyi@localhost/questionnaire_survey?sslmode=disable"
 	engine, err = xorm.NewEngine("postgres", connStr)
 	if err != nil {
 		log.Fatalf("ping to db fail! err:%+v", err)
@@ -35,8 +37,8 @@ func NewXorm() *xorm.Engine {
 		return nil
 	}
 	// 初始化一个管理角色
-	var count int
-	if err := engine.Cols("count(*)").Find(count); err != nil {
+	var count int64
+	if count, err = engine.Count(&models.Role{}); err != nil {
 		log.Println("初始化角色失败")
 		return nil
 	}

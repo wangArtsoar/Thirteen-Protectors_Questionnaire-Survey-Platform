@@ -20,7 +20,7 @@ func (u UserRepo) SaveRole(role models.Role) (int64, error) {
 
 func (u UserRepo) GetIdByRoleName(roleName string) (uint, error) {
 	var role models.Role
-	err := orm.NewXorm().Cols("").Find(&role)
+	_, err := orm.NewXorm().Cols("id").Where("name = ?", roleName).Get(&role)
 	if err != nil {
 		return 0, err
 	}
@@ -45,7 +45,7 @@ func (u UserRepo) FindByEmail(email string) (models.User, error) {
 }
 
 func (u UserRepo) ExistByEmail(email string) (bool, error) {
-	exist, err := orm.NewXorm().Exist(email)
+	exist, err := orm.NewXorm().Where("email = ?", email).Exist(&models.User{})
 	if err != nil {
 		return false, err
 	}

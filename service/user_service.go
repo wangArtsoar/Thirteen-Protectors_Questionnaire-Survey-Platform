@@ -49,8 +49,9 @@ func (u UserService) Register(request *vo.RegisterRequest) (*vo.RegisterResponse
 	if err != nil {
 		return nil, err
 	}
+	id := uuid.New().String()
 	_, err = u.UserRepo.SaveUser(models.User{
-		UUID:     uuid.New().String(),
+		ID:       id,
 		Name:     request.Name,
 		Email:    request.Email,
 		Password: request.Password,

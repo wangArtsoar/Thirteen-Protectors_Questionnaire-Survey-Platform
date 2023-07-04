@@ -7,6 +7,6 @@ import (
 
 func main() {
 	r := router.Router()
-	_ = r.Run(":8080")
 	ioc.InitIoc()
+	_ = r.Run(":8080")
 }
