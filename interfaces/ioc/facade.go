@@ -1,20 +1,17 @@
 package ioc
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/service"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/facade"
 	"github.com/facebookgo/inject"
 )
 
-var DIContainer Container
-
-type Container struct {
-	UserService service.IUserService `inject:"UserService"`
+var Container struct {
+	UserService facade.IUserService `inject:"UserService"`
 }
 
 func InitIoc() {
 	var g inject.Graph
-	handleErr(g.Provide(&inject.Object{Value: &DIContainer}))
-	InitIndexIoc(&g)
+	InitIndexIoc(g)
 	handleErr(g.Populate())
 }
 

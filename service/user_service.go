@@ -3,6 +3,7 @@ package service
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/bean"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/common"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/models"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/repository"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/vo"
@@ -13,10 +14,10 @@ import (
 	"time"
 )
 
-var _ IUserService = new(UserService)
+var _ facade.IUserService = new(UserService)
 
 type UserService struct {
-	UserRepo repository.IUserRepo `inject:"userRepo"`
+	UserRepo repository.IUserRepo `inject:"UserRepo"`
 }
 
 // Login return a loginResponse from given loginDto

@@ -17,7 +17,7 @@ func Login() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
 			return
 		}
-		loginResponse, err := ioc.DIContainer.UserService.Login(&loginDto)
+		loginResponse, err := ioc.Container.UserService.Login(&loginDto)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -42,7 +42,12 @@ func Register() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
 			return
 		}
-		response, err := ioc.DIContainer.UserService.Register(&register)
+		service := ioc.Container.UserService
+		if service == nil {
+			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误，service 获取不到"+err.Error()).Error())
+			return
+		}
+		response, err := ioc.Container.UserService.Register(&register)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return

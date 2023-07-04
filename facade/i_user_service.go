@@ -1,4 +1,4 @@
-package service
+package facade
 
 import "Thirteen-Protectors_Questionnaire-Survey-Platform/vo"
 
