@@ -11,13 +11,17 @@ import (
 // Login 登录接口
 func Login() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var loginDto vo.LoginDto
-		err := ctx.ShouldBindJSON(&loginDto)
+		var (
+			loginDto      vo.LoginDto
+			err           error
+			loginResponse *vo.LoginResponse
+		)
+		err = ctx.ShouldBindJSON(&loginDto)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
 			return
 		}
-		loginResponse, err := ioc.Container.UserService.Login(&loginDto)
+		loginResponse, err = ioc.Container.UserService.Login(&loginDto)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -36,8 +40,12 @@ func Demo() gin.HandlerFunc {
 // Register 注册
 func Register() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var register vo.RegisterRequest
-		err := ctx.ShouldBindJSON(&register)
+		var (
+			register vo.RegisterRequest
+			err      error
+			response *vo.RegisterResponse
+		)
+		err = ctx.ShouldBindJSON(&register)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
 			return
@@ -47,7 +55,7 @@ func Register() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误，service 获取不到"+err.Error()).Error())
 			return
 		}
-		response, err := ioc.Container.UserService.Register(&register)
+		response, err = ioc.Container.UserService.Register(&register)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return

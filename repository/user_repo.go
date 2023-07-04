@@ -10,47 +10,18 @@ var _ IUserRepo = new(UserRepo)
 type UserRepo struct {
 }
 
-func (u UserRepo) SaveRole(role models.Role) (int64, error) {
-	one, err := orm.NewXorm().InsertOne(role)
-	if err != nil {
-		return 0, err
-	}
-	return one, nil
+func (u *UserRepo) SaveUser(user models.User) (int64, error) {
+	return orm.NewXorm().InsertOne(user)
 }
 
-func (u UserRepo) GetIdByRoleName(roleName string) (uint, error) {
-	var role models.Role
-	_, err := orm.NewXorm().Cols("id").Where("name = ?", roleName).Get(&role)
-	if err != nil {
-		return 0, err
-	}
-	return role.Id, nil
-}
-
-func (u UserRepo) SaveUser(user models.User) (int64, error) {
-	id, err := orm.NewXorm().InsertOne(user)
-	if err != nil {
-		return id, err
-	}
-	return id, nil
-}
-
-func (u UserRepo) FindByEmail(email string) (models.User, error) {
+func (u *UserRepo) FindByEmail(email string) (*models.User, error) {
 	var user models.User
-	err := orm.NewXorm().Find(&user, "email = ?", email)
-	if err != nil {
-		return models.User{}, err
+	if err := orm.NewXorm().Find(&user, "email = ?", email); err != nil {
+		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }
 
-func (u UserRepo) ExistByEmail(email string) (bool, error) {
-	exist, err := orm.NewXorm().Where("email = ?", email).Exist(&models.User{})
-	if err != nil {
-		return false, err
-	}
-	if exist {
-		return true, nil
-	}
-	return false, nil
+func (u *UserRepo) ExistByEmail(email string) (bool, error) {
+	return orm.NewXorm().Where("email = ?", email).Exist(&models.User{})
 }
