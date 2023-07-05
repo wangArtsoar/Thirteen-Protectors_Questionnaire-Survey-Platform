@@ -17,6 +17,6 @@ type User struct {
 }
 
 type Role struct {
-	Id   uint   `json:"id"`
+	Id   uint   `json:"id" xorm:"pk autoincr"`
 	Name string `json:"name"`
 }

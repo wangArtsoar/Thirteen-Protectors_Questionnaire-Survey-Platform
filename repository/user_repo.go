@@ -16,7 +16,7 @@ func (u *UserRepo) SaveUser(user models.User) (int64, error) {
 
 func (u *UserRepo) FindByEmail(email string) (*models.User, error) {
 	var user models.User
-	if err := orm.NewXorm().Find(&user, "email = ?", email); err != nil {
+	if _, err := orm.NewXorm().Where("email = ? and is_delete = ? ", email, 0).Get(&user); err != nil {
 		return nil, err
 	}
 	return &user, nil

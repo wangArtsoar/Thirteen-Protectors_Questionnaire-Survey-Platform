@@ -3,16 +3,16 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-   "Name" : "xiaoyi",
-   "Password" : "123456"
+   "email" : "xiaoyi@icloud.com",
+   "password" : "123456"
 }
 
 ### Demo
 GET http://localhost:8080/exam/demo
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InhpYW95aSIsImV4cCI6MTY4ODM4NjUwN30.bOUGTInnwdlStb57ZmnaGs5nFrjek2L13_GOfizFprQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODg2Mzc3ODgsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIn0.f1gRCIwvn5VV6fWjXYnpHk8SsCN07L4YoErR1QrDY0A
 
-###
+### Register
 POST http://localhost:8080/auth/register
 Content-Type: application/json
 
@@ -22,3 +22,8 @@ Content-Type: application/json
   "password" : "123456",
   "roleName" : "ADMIN"
 }
+
+###
+GET http://localhost:8080/exam/logout
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODg2Mzc3ODgsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIn0.f1gRCIwvn5VV6fWjXYnpHk8SsCN07L4YoErR1QrDY0A

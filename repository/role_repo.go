@@ -21,8 +21,8 @@ func (r *RoleRepo) ExistRole(roleName string) (bool, error) {
 
 func (r *RoleRepo) GetIdByRoleName(roleName string) (uint, error) {
 	var role models.Role
-	if err := orm.NewXorm().Cols("id").Where("name = ?", roleName).Find(&role); err != nil {
-		return -1, err
+	if _, err := orm.NewXorm().Cols("id").Where("name = ?", roleName).Get(&role); err != nil {
+		return 0, err
 	}
 	return role.Id, nil
 }

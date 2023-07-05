@@ -14,10 +14,15 @@ type Claims struct {
 }
 
 // CreateNewToken return a new token
-func CreateNewToken(name string) string {
+func CreateNewToken(name string, isLoggedOut bool) string {
 	// 过期时间
-	_ = time.Now().Add(time.Hour * 24)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, nil)
+	expirationTime := time.Now().Add(time.Hour * 24).Unix()
+	claims := jwt.MapClaims{
+		"name":        name,
+		"isLoggedOut": isLoggedOut,
+		"extractAt":   expirationTime,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString([]byte(bean.SecretKey))
 	if err != nil {
 		return errors.New("jwt token create fail").Error()
@@ -25,20 +30,28 @@ func CreateNewToken(name string) string {
 	return tokenString
 }
 
-// ExtractJwt 解析jwt
-func ExtractJwt(jwtToken string) (jwt.Claims, error) {
-	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
+// ExtractJwtToken 解析jwt
+func ExtractJwtToken(jwtToken string) (*jwt.Token, error) {
+	return jwt.ParseWithClaims(jwtToken, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(bean.SecretKey), nil
 	})
+}
+
+// GetMapClaims 获取MapClaims
+func GetMapClaims(jwtToken string) (*jwt.Token, jwt.MapClaims, error) {
+	token, err := ExtractJwtToken(jwtToken)
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
-			return nil, errors.New("invalid JWT signature")
+			return nil, nil, errors.New("invalid JWT signature")
 		}
-		return nil, errors.New("Error parsing JWT: " + err.Error())
+		return nil, nil, errors.New("Error parsing JWT: " + err.Error())
 	}
 	if !token.Valid {
-		return nil, errors.New("invalid JWT")
+		return nil, nil, errors.New("invalid JWT")
 	}
-	claims := token.Claims
-	return claims, nil
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, nil, errors.New("invalid JWT")
+	}
+	return token, claims, nil
 }

@@ -43,9 +43,9 @@ func NewXorm() *xorm.Engine {
 		return nil
 	}
 	if count <= 0 {
-		_, err = engine.InsertOne(models.Role{Name: "ADMIN"})
+		_, err = engine.InsertOne(&models.Role{Name: "ADMIN"})
 		if err != nil {
-			log.Println("初始化角色失败")
+			log.Println("初始化角色失败" + err.Error())
 			return nil
 		}
 	}

@@ -63,3 +63,11 @@ func Register() gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, response)
 	}
 }
+
+// Logout 退出登录
+func Logout() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, &vo.RegisterResponse{
+			Message: "退出成功", Authentication: ctx.GetHeader("Authorization")})
+	}
+}

@@ -17,22 +17,20 @@ func InitIoc() {
 		&inject.Object{Value: &Container},
 		&inject.Object{Value: &service.UserService{}, Name: "UserService"},
 		&inject.Object{Value: &repository.UserRepo{}, Name: "UserRepo"},
+		&inject.Object{Value: &repository.RoleRepo{}, Name: "RoleRepo"},
+		&inject.Object{Value: &repository.TokenRepo{}, Name: "TokenRepo"},
 	)
-	if err != nil {
-		panic(err)
-	}
+	handleErr(err)
 	err = g.Populate()
+	handleErr(err)
+}
+
+// 错误处理
+func handleErr(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
-
-// 错误处理
-//func handleErr(err error) {
-//	if err != nil {
-//		panic(err)
-//	}
-//}
 
 //func InitIndexIoc(g inject.Graph) {
 //	handleErr(g.Provide(

@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"testing"
+	"time"
 )
 
 var jwtKey2 = []byte(bean.SecretKey)
 
 func Test2(t *testing.T) {
-	tokenString := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InhpYW95aSIsImV4cCI6MTY4ODM2Nzg2Mn0.zHK06J4HOlN3HNj06RWQVD7j-wIs7WcDOe37EpJJvX4"
+	tokenString := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOiIyMDIzLTA3LTA2VDE2OjE4OjUxLjMzMzAxNTcrMDg6MDAiLCJpc0xvZ2dlZE91dCI6ZmFsc2UsIm5hbWUiOiJ4aWFveWlAaWNsb3VkLmNvbSJ9.-7EOh2QEGg6bY3YyVzVM47dx6cLoWdAi5UUlLQthB78"
 
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey2, nil
 	})
 	if err != nil {
@@ -24,21 +25,20 @@ func Test2(t *testing.T) {
 		return
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		t.Error("Invalid JWT")
+	if ok && token.Valid {
+		fmt.Println("JWT is valid")
+		name := claims["name"].(string)
+		isLoggedOut := claims["isLoggedOut"].(bool)
+		fmt.Println("name:", name)
+		fmt.Println("is loggedOut:", isLoggedOut)
+		extractAt := claims["extractAt"].(string)
+		extractTime, err := time.Parse(time.RFC3339Nano, extractAt)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		fmt.Println("extract at:", extractTime)
 		return
 	}
-	fmt.Println("JWT is valid")
-	subject, err := claims.GetSubject()
-	if err != nil {
-		t.Error("Get JWT subject fail" + err.Error())
-		return
-	}
-	fmt.Println("Username:", subject)
-	expirationTime, err := claims.GetExpirationTime()
-	if err != nil {
-		t.Error("Get JWT expirationTime fail" + err.Error())
-		return
-	}
-	fmt.Println("Expires at:", expirationTime)
+	t.Error("Invalid JWT")
 }
