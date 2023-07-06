@@ -23,21 +23,21 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
+		// 判断 token 是否已经退出登录
+		if claims["isLoggedOut"].(bool) {
+			c.JSON(http.StatusOK, gin.H{"error": "您已经退出了登录，请重新登录"})
+		}
 		// 获取email
 		name := claims["name"].(string)
 		// check if subject from database
 		repo := repository.UserRepo{}
-		flag, err := repo.ExistByEmail(name)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		if flag, err := repo.ExistByEmail(name); flag && err == nil {
+			// 下一步
+			c.Next()
+		} else {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "User is not be Found" + err.Error()})
 			return
 		}
-		if !flag {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "the user not found"})
-			return
-		}
-		// 下一步
-		c.Next()
 	}
 }
 
@@ -50,14 +50,13 @@ func LogoutHandle() gin.HandlerFunc {
 			return
 		}
 		// 验证 token 是否有效
-		jwtToken, claims, err := GetMapClaims(token)
+		_, claims, err := GetMapClaims(token)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
 		// 设置为退出登录
 		claims["isLoggedOut"] = true
-		jwtToken.Valid = false
 		newToken := CreateNewToken(claims["name"].(string), claims["isLoggedOut"].(bool))
 		ctx.Header("Authorization", "Bearer "+newToken)
 	}

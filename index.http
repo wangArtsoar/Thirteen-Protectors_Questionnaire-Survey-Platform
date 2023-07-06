@@ -10,7 +10,7 @@ Content-Type: application/json
 ### Demo
 GET http://localhost:8080/exam/demo
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODg2Mzc3ODgsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIn0.f1gRCIwvn5VV6fWjXYnpHk8SsCN07L4YoErR1QrDY0A
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODg3MjAwMjcsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIn0.Ee2ZrX_pfpI0cuYkmWiemO2SaiJ9-zYEEY0OjOQU-a4
 
 ### Register
 POST http://localhost:8080/auth/register
@@ -23,7 +23,9 @@ Content-Type: application/json
   "roleName" : "ADMIN"
 }
 
-###
+### Logout
 GET http://localhost:8080/exam/logout
 Accept: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODg2Mzc3ODgsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIn0.f1gRCIwvn5VV6fWjXYnpHk8SsCN07L4YoErR1QrDY0A
+
+

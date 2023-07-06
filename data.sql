@@ -1,25 +1,12 @@
 -- role
 create table if not exists public.role
 (
-    id   integer not null
+    id   integer generated always as identity
     primary key,
     name varchar(50)
     );
 
 alter table public.role
-    owner to postgres;
-
--- token
-create table if not exists public.token
-(
-    id           integer not null
-    primary key,
-    user_id      varchar(32),
-    access_token varchar(50),
-    is_valid     smallint
-    );
-
-alter table public.token
     owner to postgres;
 
 -- user
@@ -31,7 +18,7 @@ create table if not exists public."user"
     name      varchar(50),
     email     varchar(50)
     unique,
-    password  varchar(50),
+    password  char(60),
     create_at date,
     update_at date,
     is_delete smallint,

@@ -17,13 +17,12 @@ import (
 var _ facade.IUserService = new(UserService)
 
 type UserService struct {
-	UserRepo  repository.IUserRepo  `inject:"UserRepo"`
-	RoleRepo  repository.IRoleRepo  `inject:"RoleRepo"`
-	TokenRepo repository.ITokenRepo `inject:"TokenRepo"`
+	UserRepo repository.IUserRepo `inject:"UserRepo"`
+	RoleRepo repository.IRoleRepo `inject:"RoleRepo"`
 }
 
 // Login return a loginResponse from given loginDto
-func (u UserService) Login(dto *vo.LoginDto) (*vo.LoginResponse, error) {
+func (u *UserService) Login(dto *vo.LoginDto) (*vo.LoginResponse, error) {
 	// 查找用户
 	user, err := u.UserRepo.FindByEmail(dto.Email)
 	if err != nil {
@@ -33,23 +32,15 @@ func (u UserService) Login(dto *vo.LoginDto) (*vo.LoginResponse, error) {
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(dto.Password)); err != nil {
 		return nil, err
 	}
-	// 删除token
-	if _, err = u.TokenRepo.DeleteTokenByUserId(user.ID); err != nil {
-		return nil, err
-	}
 	// 创建新token
 	token := common.CreateNewToken(user.Email, false)
-	// 保存token
-	if _, err = u.TokenRepo.SaveToken(models.Token{UserId: user.ID, AccessToken: token}); err != nil {
-		return nil, err
-	}
 	return &vo.LoginResponse{
 		Authentication: bean.Header + token,
 	}, nil
 }
 
 // Register return a registerResponse from given registerRequest
-func (u UserService) Register(request *vo.RegisterRequest) (*vo.RegisterResponse, error) {
+func (u *UserService) Register(request *vo.RegisterRequest) (*vo.RegisterResponse, error) {
 	// check email database if exist
 	flag, err := u.UserRepo.ExistByEmail(request.Email)
 	if err != nil {
@@ -79,10 +70,6 @@ func (u UserService) Register(request *vo.RegisterRequest) (*vo.RegisterResponse
 		return nil, err
 	}
 	token := common.CreateNewToken(request.Email, false)
-	_, err = u.TokenRepo.SaveToken(models.Token{
-		AccessToken: token,
-		UserId:      id,
-	})
 	if err != nil {
 		return nil, err
 	}
