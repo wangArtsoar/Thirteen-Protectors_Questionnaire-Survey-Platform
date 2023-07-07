@@ -58,7 +58,7 @@ func LogoutHandle() gin.HandlerFunc {
 		}
 		// 设置为退出登录
 		claims["isLoggedOut"] = true
-		newToken := CreateNewToken(claims["name"].(string), claims["role"].(map[string]any),
+		newToken := CreateNewToken(claims["name"].(string), claims["role"].(string),
 			claims["isLoggedOut"].(bool))
 		ctx.Header("Authorization", "Bearer "+newToken)
 		ctx.JSON(http.StatusOK, &vo.RegisterResponse{
