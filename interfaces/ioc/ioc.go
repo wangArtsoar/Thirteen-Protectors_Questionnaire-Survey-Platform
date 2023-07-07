@@ -1,33 +1,33 @@
 package ioc
 
 import (
-	server "Thirteen-Protectors_Questionnaire-Survey-Platform/repository/server/dao"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/repository/user"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/service"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/service/facade"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/dao"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/user"
+	service2 "Thirteen-Protectors_Questionnaire-Survey-Platform/application/service"
+	facade2 "Thirteen-Protectors_Questionnaire-Survey-Platform/application/service/facade"
 	"github.com/facebookgo/inject"
 )
 
 var Container struct {
-	UserService   facade.IUserService   `inject:"UserService"`
-	ServerService facade.IServerService `inject:"ServerService"`
+	UserService   facade2.IUserService   `inject:"UserService"`
+	ServerService facade2.IServerService `inject:"ServerService"`
 }
 
 func InitIoc() {
 	var g inject.Graph
 	err := g.Provide(
 		&inject.Object{Value: &Container},
-		&inject.Object{Value: &service.UserService{}, Name: "UserService"},
+		&inject.Object{Value: &service2.UserService{}, Name: "UserService"},
 		&inject.Object{Value: &user.UserRepo{}, Name: "UserRepo"},
 
-		&inject.Object{Value: &service.ServerService{}, Name: "ServerService"},
-		&inject.Object{Value: &server.ServerRepo{}, Name: "ServerRepo"},
-		&inject.Object{Value: &server.ChannelRepo{}, Name: "ChannelRepo"},
-		&inject.Object{Value: &server.ServerMemberRepo{}, Name: "ServerMemberRepo"},
-		&inject.Object{Value: &server.LabelRepo{}, Name: "LabelRepo"},
-		&inject.Object{Value: &server.MemberRoleRepo{}, Name: "MemberRoleRepo"},
-		&inject.Object{Value: &server.MemberRoleRepo{}, Name: "MemberRoleRepo"},
-		&inject.Object{Value: &server.MessageRepo{}, Name: "MessageRepo"},
+		&inject.Object{Value: &service2.ServerService{}, Name: "ServerService"},
+		&inject.Object{Value: &dao.ServerRepo{}, Name: "ServerRepo"},
+		&inject.Object{Value: &dao.ChannelRepo{}, Name: "ChannelRepo"},
+		&inject.Object{Value: &dao.ServerMemberRepo{}, Name: "ServerMemberRepo"},
+		&inject.Object{Value: &dao.LabelRepo{}, Name: "LabelRepo"},
+		&inject.Object{Value: &dao.MemberRoleRepo{}, Name: "MemberRoleRepo"},
+		&inject.Object{Value: &dao.IdentityRepo{}, Name: "IdentityRepo"},
+		&inject.Object{Value: &dao.MessageRepo{}, Name: "MessageRepo"},
 	)
 	handleErr(err)
 	err = g.Populate()
@@ -40,11 +40,3 @@ func handleErr(err error) {
 		panic(err)
 	}
 }
-
-//func InitIndexIoc(g inject.Graph) {
-//	handleErr(g.Provide(
-//		&inject.Object{Value: &Container},
-//		&inject.Object{Value: &service.UserService{}, Name: "UserService"},
-//		&inject.Object{Value: &repository.UserRepo{}, Name: "UserRepo"},
-//	))
-//}

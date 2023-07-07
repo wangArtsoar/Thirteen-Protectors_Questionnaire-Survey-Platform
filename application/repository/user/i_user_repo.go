@@ -1,6 +1,8 @@
 package user
 
-import "Thirteen-Protectors_Questionnaire-Survey-Platform/models"
+import (
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+)
 
 type IUserRepo interface {
 	ExistByEmail(email string) (bool, error)

@@ -1,8 +1,8 @@
 package common
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/repository/user"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/vo"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/user"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/vo"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"

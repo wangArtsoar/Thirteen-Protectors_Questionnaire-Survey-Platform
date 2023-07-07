@@ -1,7 +1,7 @@
 package common
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/constant"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"time"

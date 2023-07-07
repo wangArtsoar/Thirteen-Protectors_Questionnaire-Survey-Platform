@@ -2,7 +2,7 @@ package interfaces
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ioc"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/vo"
+	vo2 "Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/vo"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -12,9 +12,9 @@ import (
 func Login() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var (
-			loginDto      vo.LoginDto
+			loginDto      vo2.LoginDto
 			err           error
-			loginResponse *vo.LoginResponse
+			loginResponse *vo2.LoginResponse
 		)
 		err = ctx.ShouldBindJSON(&loginDto)
 		if err != nil {
@@ -41,9 +41,9 @@ func Demo() gin.HandlerFunc {
 func Register() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var (
-			register vo.RegisterRequest
+			register vo2.RegisterRequest
 			err      error
-			response *vo.RegisterResponse
+			response *vo2.RegisterResponse
 		)
 		err = ctx.ShouldBindJSON(&register)
 		if err != nil {

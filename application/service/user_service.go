@@ -1,12 +1,12 @@
 package service
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/common"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/constant"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/models"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/repository/user"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/service/facade"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/vo"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/user"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/service/facade"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/common"
+	constant2 "Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
+	vo2 "Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/vo"
 	errors "errors"
 	"github.com/goccy/go-json"
 	"github.com/google/uuid"
@@ -22,7 +22,7 @@ type UserService struct {
 }
 
 // Login return a loginResponse from given loginDto
-func (u *UserService) Login(dto *vo.LoginDto) (*vo.LoginResponse, error) {
+func (u *UserService) Login(dto *vo2.LoginDto) (*vo2.LoginResponse, error) {
 	// 查找用户
 	user, err := u.UserRepo.FindByEmail(dto.Email)
 	if err != nil {
@@ -44,13 +44,13 @@ func (u *UserService) Login(dto *vo.LoginDto) (*vo.LoginResponse, error) {
 	}
 	// 创建新token
 	token := common.CreateNewToken(user.Email, roleName, false)
-	return &vo.LoginResponse{
-		Authentication: constant.Header + token,
+	return &vo2.LoginResponse{
+		Authentication: constant2.Header + token,
 	}, nil
 }
 
 // Register return a registerResponse from given registerRequest
-func (u *UserService) Register(request *vo.RegisterRequest) (*vo.RegisterResponse, error) {
+func (u *UserService) Register(request *vo2.RegisterRequest) (*vo2.RegisterResponse, error) {
 	// check email database if exist
 	flag, err := u.UserRepo.ExistByEmail(request.Email)
 	if err != nil {
@@ -64,7 +64,7 @@ func (u *UserService) Register(request *vo.RegisterRequest) (*vo.RegisterRespons
 	if err != nil {
 		return nil, err
 	}
-	role := constant.User()
+	role := constant2.User()
 	roleJSON, err := json.Marshal(role)
 	_, err = u.UserRepo.SaveUser(models.User{
 		ID:       id,
@@ -81,8 +81,8 @@ func (u *UserService) Register(request *vo.RegisterRequest) (*vo.RegisterRespons
 	if err != nil {
 		return nil, err
 	}
-	return &vo.RegisterResponse{
+	return &vo2.RegisterResponse{
 		Message:        "注册成功",
-		Authentication: constant.Header + token,
+		Authentication: constant2.Header + token,
 	}, nil
 }

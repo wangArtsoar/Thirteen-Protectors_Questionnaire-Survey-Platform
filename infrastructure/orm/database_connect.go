@@ -1,8 +1,8 @@
 package orm
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/constant"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/models"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	_ "database/sql"
 	"github.com/go-xorm/xorm"
 	"github.com/goccy/go-json"

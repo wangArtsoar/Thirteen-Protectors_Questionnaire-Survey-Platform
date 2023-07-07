@@ -1,7 +1,7 @@
 package router
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/common"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/common"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces"
 	"github.com/gin-gonic/gin"
 )

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/router"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ioc"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/router"
 )
 
 func main() {

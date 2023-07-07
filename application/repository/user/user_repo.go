@@ -1,9 +1,9 @@
 package user
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/constant"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/models"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/orm"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/orm"
 )
 
 var _ IUserRepo = new(UserRepo)
