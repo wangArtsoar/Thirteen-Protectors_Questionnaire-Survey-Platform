@@ -3,14 +3,15 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-   "email" : "xiaoyi@icloud.com",
-   "password" : "123456"
+   "email" : "Super@super.com",
+   "password" : ""
 }
 
 ### Demo
 GET http://localhost:8080/exam/demo
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODg3MjAwMjcsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIn0.Ee2ZrX_pfpI0cuYkmWiemO2SaiJ9-zYEEY0OjOQU-a4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODg3ODM0NDksImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6IlN1cGVyQHN1cGVyLmNvbSIsInJvbGUiOnsiU1VQRVIiOlsiYWRtaW46OmNyZWF0ZSIsImFkbWluOjpzZWxlY3QiLCJhZG1pbjo6dXBkYXRlIiwiYWRtaW46OmRlbGV0ZSIsIm1hbmFnZTo6Y3JlYXRlIiwibWFuYWdlOjpzZWxlY3QiLCJtYW5hZ2U6OnVwZGF0ZSIsIm1hbmFnZTo6ZGVsZXRlIl19fQ.ZJd9dunhdTRpITkihhot_8UEVBAtltu0O8cDIiSV1v8
+
 
 ### Register
 POST http://localhost:8080/auth/register
@@ -19,13 +20,12 @@ Content-Type: application/json
 {
   "name" : "xiaoyi",
   "email" : "xiaoyi@icloud.com",
-  "password" : "123456",
-  "roleName" : "ADMIN"
+  "password" : "123456"
 }
 
 ### Logout
 GET http://localhost:8080/exam/logout
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODg2Mzc3ODgsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIn0.f1gRCIwvn5VV6fWjXYnpHk8SsCN07L4YoErR1QrDY0A
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODg3ODM0NDksImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6IlN1cGVyQHN1cGVyLmNvbSIsInJvbGUiOnsiU1VQRVIiOlsiYWRtaW46OmNyZWF0ZSIsImFkbWluOjpzZWxlY3QiLCJhZG1pbjo6dXBkYXRlIiwiYWRtaW46OmRlbGV0ZSIsIm1hbmFnZTo6Y3JlYXRlIiwibWFuYWdlOjpzZWxlY3QiLCJtYW5hZ2U6OnVwZGF0ZSIsIm1hbmFnZTo6ZGVsZXRlIl19fQ.ZJd9dunhdTRpITkihhot_8UEVBAtltu0O8cDIiSV1v8
 
 

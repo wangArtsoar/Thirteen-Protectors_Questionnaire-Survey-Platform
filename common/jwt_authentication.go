@@ -2,6 +2,7 @@ package common
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/repository"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/vo"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -57,8 +58,11 @@ func LogoutHandle() gin.HandlerFunc {
 		}
 		// 设置为退出登录
 		claims["isLoggedOut"] = true
-		newToken := CreateNewToken(claims["name"].(string), claims["isLoggedOut"].(bool))
+		newToken := CreateNewToken(claims["name"].(string), claims["role"].(map[string]any),
+			claims["isLoggedOut"].(bool))
 		ctx.Header("Authorization", "Bearer "+newToken)
+		ctx.JSON(http.StatusOK, &vo.RegisterResponse{
+			Message: "退出成功", Authentication: "Bearer " + newToken})
 	}
 }
 

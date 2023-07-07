@@ -6,17 +6,12 @@ import (
 
 type User struct {
 	ID       string    `json:"ID" xorm:"'id'"`
-	RoleId   uint      `json:"role_id"`
+	Role     []byte    `json:"role"`
 	Name     string    `json:"name"`
 	Email    string    `json:"email"`
 	Password string    `json:"password"`
 	CreateAt time.Time `json:"createAt"`
 	UpdateAt time.Time `json:"update_at"`
-	IsDelete int       `json:"is_delete"`
-	IsValid  int       `json:"is_valid"`
-}
-
-type Role struct {
-	Id   uint   `json:"id" xorm:"pk autoincr"`
-	Name string `json:"name"`
+	IsDelete int       `json:"is_delete"` // 是否删除(0-否,1-是)
+	IsValid  int       `json:"is_valid"`  // 是否失效(0-否,1-是)
 }

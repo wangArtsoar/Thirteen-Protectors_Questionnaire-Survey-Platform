@@ -17,7 +17,6 @@ func InitIoc() {
 		&inject.Object{Value: &Container},
 		&inject.Object{Value: &service.UserService{}, Name: "UserService"},
 		&inject.Object{Value: &repository.UserRepo{}, Name: "UserRepo"},
-		&inject.Object{Value: &repository.RoleRepo{}, Name: "RoleRepo"},
 	)
 	handleErr(err)
 	err = g.Populate()

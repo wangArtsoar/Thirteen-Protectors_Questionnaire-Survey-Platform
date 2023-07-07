@@ -1,9 +1,12 @@
 package orm
 
 import (
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/const"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/models"
 	_ "database/sql"
 	"github.com/go-xorm/xorm"
+	"github.com/goccy/go-json"
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"log"
 	"time"
@@ -36,14 +39,22 @@ func NewXorm() *xorm.Engine {
 		log.Fatalf("ping to db fail! err:%+v", err)
 		return nil
 	}
-	// 初始化一个管理角色
+	// 初始化一个超级管理用户
 	var count int64
-	if count, err = engine.Count(&models.Role{}); err != nil {
-		log.Println("初始化角色失败")
+	if count, err = engine.Count(&models.User{}); err != nil {
+		log.Println("初始化用户失败")
 		return nil
 	}
 	if count <= 0 {
-		_, err = engine.InsertOne(&models.Role{Name: "ADMIN"})
+		role := _const.Super()
+		roleJSON, err := json.Marshal(role)
+		_, err = engine.InsertOne(&models.User{
+			ID:       uuid.New().String(),
+			Name:     "SUPER",
+			Email:    "Super@super.com",
+			Role:     roleJSON,
+			CreateAt: time.Now(),
+		})
 		if err != nil {
 			log.Println("初始化角色失败" + err.Error())
 			return nil

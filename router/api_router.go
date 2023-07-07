@@ -17,6 +17,6 @@ func Router() *gin.Engine {
 	protected := r.Group("/exam")
 	protected.Use(common.TokenAuthMiddleware())
 	protected.GET("/demo", common.TokenAuthMiddleware(), interfaces.Demo())
-	protected.GET("/logout", common.LogoutHandle(), interfaces.Logout())
+	protected.GET("/logout", common.LogoutHandle())
 	return r
 }

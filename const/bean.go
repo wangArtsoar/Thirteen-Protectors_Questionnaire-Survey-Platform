@@ -1,4 +1,4 @@
-package bean
+package _const
 
 // SecretKey 密钥
 const SecretKey string = "xiaoyi_soft"
@@ -6,5 +6,8 @@ const SecretKey string = "xiaoyi_soft"
 // Header 前缀
 const Header string = "Bearer "
 
-// Delete 删除
-const Delete int = 1
+// Yes 删除
+const Yes int = 1
+
+// Default 默认
+const Default int = 0

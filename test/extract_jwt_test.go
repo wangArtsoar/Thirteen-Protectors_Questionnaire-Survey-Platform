@@ -1,14 +1,14 @@
 package main
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/bean"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/const"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"testing"
 	"time"
 )
 
-var jwtKey2 = []byte(bean.SecretKey)
+var jwtKey2 = []byte(_const.SecretKey)
 
 func Test2(t *testing.T) {
 	tokenString := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOiIyMDIzLTA3LTA2VDE2OjE4OjUxLjMzMzAxNTcrMDg6MDAiLCJpc0xvZ2dlZE91dCI6ZmFsc2UsIm5hbWUiOiJ4aWFveWlAaWNsb3VkLmNvbSJ9.-7EOh2QEGg6bY3YyVzVM47dx6cLoWdAi5UUlLQthB78"

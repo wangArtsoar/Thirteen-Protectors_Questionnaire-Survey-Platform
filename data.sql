@@ -3,7 +3,8 @@ create table if not exists public.role
 (
     id   integer generated always as identity
     primary key,
-    name varchar(50)
+    name varchar(50),
+    permissions text[]
     );
 
 alter table public.role
