@@ -1,4 +1,4 @@
-package _const
+package constant
 
 // SecretKey 密钥
 const SecretKey string = "xiaoyi_soft"

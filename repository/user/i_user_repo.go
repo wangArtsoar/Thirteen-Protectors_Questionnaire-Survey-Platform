@@ -1,4 +1,4 @@
-package repository
+package user
 
 import "Thirteen-Protectors_Questionnaire-Survey-Platform/models"
 

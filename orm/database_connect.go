@@ -1,7 +1,7 @@
 package orm
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/const"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/models"
 	_ "database/sql"
 	"github.com/go-xorm/xorm"
@@ -46,7 +46,7 @@ func NewXorm() *xorm.Engine {
 		return nil
 	}
 	if count <= 0 {
-		role := _const.Super()
+		role := constant.Super()
 		roleJSON, err := json.Marshal(role)
 		_, err = engine.InsertOne(&models.User{
 			ID:       uuid.New().String(),

@@ -1,7 +1,7 @@
 package common
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/const"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/constant"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
@@ -14,17 +14,17 @@ type Claims struct {
 }
 
 // CreateNewToken return a new token
-func CreateNewToken(name string, roleMap map[string]any, isLoggedOut bool) string {
+func CreateNewToken(name string, roleName string, isLoggedOut bool) string {
 	// 过期时间
 	expirationTime := time.Now().Add(time.Hour * 24).Unix()
 	claims := jwt.MapClaims{
 		"name":        name,
 		"isLoggedOut": isLoggedOut,
 		"extractAt":   expirationTime,
-		"role":        roleMap,
+		"role":        roleName,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(_const.SecretKey))
+	tokenString, err := token.SignedString([]byte(constant.SecretKey))
 	if err != nil {
 		return errors.New("jwt token create fail").Error()
 	}
@@ -34,7 +34,7 @@ func CreateNewToken(name string, roleMap map[string]any, isLoggedOut bool) strin
 // ExtractJwtToken 解析jwt
 func ExtractJwtToken(jwtToken string) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(jwtToken, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(_const.SecretKey), nil
+		return []byte(constant.SecretKey), nil
 	})
 }
 

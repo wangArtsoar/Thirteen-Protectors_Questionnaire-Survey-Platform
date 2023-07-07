@@ -2,10 +2,10 @@ package service
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/common"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/const"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/facade"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/models"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/repository"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/repository/user"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/service/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/vo"
 	errors "errors"
 	"github.com/goccy/go-json"
@@ -18,7 +18,7 @@ import (
 var _ facade.IUserService = new(UserService)
 
 type UserService struct {
-	UserRepo repository.IUserRepo `inject:"UserRepo"`
+	UserRepo user.IUserRepo `inject:"UserRepo"`
 }
 
 // Login return a loginResponse from given loginDto
@@ -32,7 +32,9 @@ func (u *UserService) Login(dto *vo.LoginDto) (*vo.LoginResponse, error) {
 	if err = json.Unmarshal(user.Role, &roleMap); err != nil {
 		return nil, err
 	}
+	var roleName string
 	for k := range roleMap {
+		roleName = k
 		if k != "SUPER" {
 			// 检查密码
 			if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(dto.Password)); err != nil {
@@ -41,9 +43,9 @@ func (u *UserService) Login(dto *vo.LoginDto) (*vo.LoginResponse, error) {
 		}
 	}
 	// 创建新token
-	token := common.CreateNewToken(user.Email, roleMap, false)
+	token := common.CreateNewToken(user.Email, roleName, false)
 	return &vo.LoginResponse{
-		Authentication: _const.Header + token,
+		Authentication: constant.Header + token,
 	}, nil
 }
 
@@ -62,7 +64,7 @@ func (u *UserService) Register(request *vo.RegisterRequest) (*vo.RegisterRespons
 	if err != nil {
 		return nil, err
 	}
-	role := _const.User()
+	role := constant.User()
 	roleJSON, err := json.Marshal(role)
 	_, err = u.UserRepo.SaveUser(models.User{
 		ID:       id,
@@ -75,12 +77,12 @@ func (u *UserService) Register(request *vo.RegisterRequest) (*vo.RegisterRespons
 	if err != nil {
 		return nil, err
 	}
-	token := common.CreateNewToken(request.Email, map[string]any{}, false)
+	token := common.CreateNewToken(request.Email, "USER", false)
 	if err != nil {
 		return nil, err
 	}
 	return &vo.RegisterResponse{
 		Message:        "注册成功",
-		Authentication: _const.Header + token,
+		Authentication: constant.Header + token,
 	}, nil
 }

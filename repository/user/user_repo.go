@@ -1,6 +1,7 @@
-package repository
+package user
 
 import (
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/models"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/orm"
 )
@@ -16,12 +17,16 @@ func (u *UserRepo) SaveUser(user models.User) (int64, error) {
 
 func (u *UserRepo) FindByEmail(email string) (*models.User, error) {
 	var user models.User
-	if _, err := orm.NewXorm().Where("email = ? and is_delete = ? ", email, 0).Get(&user); err != nil {
+	if _, err := orm.NewXorm().Where(
+		"email = ? and is_delete = ? and is_valid = ?", email, constant.Default, constant.Default).
+		Get(&user); err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
 func (u *UserRepo) ExistByEmail(email string) (bool, error) {
-	return orm.NewXorm().Where("email = ?", email).Exist(&models.User{})
+	return orm.NewXorm().Where(
+		"email = ? and is_delete = ? and is_valid = ?", email, constant.Default, constant.Default).
+		Exist(&models.User{})
 }
