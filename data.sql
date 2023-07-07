@@ -1,21 +1,9 @@
--- role
-create table if not exists public.role
-(
-    id   integer generated always as identity
-    primary key,
-    name varchar(50),
-    permissions text[]
-    );
-
-alter table public.role
-    owner to postgres;
-
 -- user
 create table if not exists public."user"
 (
     id        varchar(50) not null
     primary key,
-    role_id   integer,
+    role      json,
     name      varchar(50),
     email     varchar(50)
     unique,
