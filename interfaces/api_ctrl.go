@@ -1,10 +1,12 @@
 package interfaces
 
 import (
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/init"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ioc"
 	vo2 "Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/vo"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -60,6 +62,12 @@ func Register() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
+		server := init.Server(register.Name)
+		err = ioc.Container.ServerService.SaveServer(&server, register.Email)
+		if err != nil {
+			log.Println("server init fail")
+		}
+		log.Println("server init")
 		ctx.JSON(http.StatusOK, response)
 	}
 }

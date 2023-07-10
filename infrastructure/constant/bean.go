@@ -11,3 +11,6 @@ const Yes int = 1
 
 // Default 默认
 const Default int = 0
+
+// Record 条数
+const Record int = 50

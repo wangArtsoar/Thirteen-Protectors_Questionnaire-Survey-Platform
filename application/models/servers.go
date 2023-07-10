@@ -6,12 +6,14 @@ import (
 
 // Server 服务器
 type Server struct {
-	Id       int64     `json:"id" xorm:"'id' pk autoincr"`
-	Name     string    `json:"name"`
-	CreateAt time.Time `json:"create_at"`
-	UpdateAt time.Time `json:"update_at"`
-	OwnerId  int64     `json:"owner_id" xorm:"owner_id index"`
-	Labels   []string  `json:"labels"`
+	Id         int64     `json:"id" xorm:"'id' pk autoincr"`
+	Name       string    `json:"name"`
+	CreateAt   time.Time `json:"create_at"`
+	UpdateAt   time.Time `json:"update_at"`
+	OwnerId    string    `json:"owner_id" xorm:"owner_id index"`
+	OwnerEmail string    `json:"owner_email" xorm:"owner_email index"`
+	Labels     []string  `json:"labels"`
+	IsDelete   int       `json:"is_delete"`
 }
 
 // Channel 频道
@@ -23,6 +25,7 @@ type Channel struct {
 	CreateAt time.Time `json:"create_at"`
 	UpdateAt time.Time `json:"update_at"`
 	IsMute   int       `json:"is_mute"`
+	IsDelete int       `json:"is_delete"`
 }
 
 // ServerMember 服务器成员
