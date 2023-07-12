@@ -24,10 +24,89 @@ type ServerService struct {
 	UserRepo         user.IUserRepo            `inject:"UserRepo"`
 }
 
-func (s *ServerService) FindAllChannelByServerId(serverId int64) ([]*models.Channel, error) {
-	return s.ChannelRepo.FindAllByServerId(serverId)
+// SaveMemberRole 保存成员角色
+func (s *ServerService) SaveMemberRole(role *models.MemberRole) error {
+	if _, err := s.MemberRoleRepo.NewAMemberRole(role); err != nil {
+		return err
+	}
+	return nil
 }
 
+// SaveIdentity 保存身份组
+func (s *ServerService) SaveIdentity(identity *models.Identity) error {
+	if _, err := s.IdentityRepo.SaveIdentity(identity); err != nil {
+		return err
+	}
+	return nil
+}
+
+// SaveServerMember 保存服务器成员
+func (s *ServerService) SaveServerMember(serverMember *models.ServerMember) error {
+	email := serverMember.UserEmail
+	userInfo, err := s.UserRepo.FindByEmail(email)
+	if err != nil {
+		return err
+	}
+	// init ServerMember
+	serverMember.UserName = userInfo.Name
+	serverMember.UserId = userInfo.ID
+	serverMember.CreateAt = time.Now()
+	serverMember.IdentityId = int64(constant.Default)
+	// find channel limit 10 from serverId
+	channels, err := s.ChannelRepo.FindAllByServerId(10, serverMember.ServerId)
+	if err != nil {
+		return err
+	}
+	for _, channel := range channels {
+		serverMember.Channels = append(serverMember.Channels, channel.Name)
+	}
+	if _, err = s.ServerMemberRepo.NewAServerMember(serverMember); err != nil {
+		return err
+	}
+	return nil
+}
+
+// SaveChannel 保存频道
+func (s *ServerService) SaveChannel(channel *models.Channel) error {
+	var err error
+	session := orm.NewXorm().NewSession()
+	defer session.Close()
+	if err = session.Begin(); err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			err = session.Rollback()
+			if err != nil {
+				return
+			}
+		}
+	}()
+	flag, err := session.Table("label").Where("name = ?", channel.Label).Exist(&models.Label{})
+	if err != nil {
+		return err
+	}
+	if flag {
+		if _, err = s.ChannelRepo.CreateChannel(session, channel); err != nil {
+			return err
+		}
+		return session.Commit()
+	}
+	if _, err = session.Table("label").InsertOne(models.Label{
+		ServerId: channel.ServerId,
+		Name:     channel.Label,
+	}); err != nil {
+		return err
+	}
+	return session.Commit()
+}
+
+// FindAllChannelByServerId 根据服务器ID查询全部频道
+func (s *ServerService) FindAllChannelByServerId(serverId int64) ([]*models.Channel, error) {
+	return s.ChannelRepo.FindAllByServerId(constant.Default, serverId)
+}
+
+// FindAllServerByUserEmail 根据创建者查询全部服务器
 func (s *ServerService) FindAllServerByUserEmail(userEmail string) ([]*models.Server, error) {
 	return s.ServerRepo.FindAllServerByUser(userEmail)
 }

@@ -26,6 +26,15 @@ func Router() *gin.Engine {
 
 	channel := r.Group("/channel")
 	channel.GET("/findAllByServerId", common.TokenAuthMiddleware(), interfaces.FindAllChannelByServer())
-	channel.POST("/Save", common.TokenAuthMiddleware(), interfaces.SaveChannel())
+	channel.POST("/save/:serverID", common.TokenAuthMiddleware(), interfaces.SaveChannel())
+
+	serverMember := r.Group("/serverMember")
+	serverMember.POST("/save", common.TokenAuthMiddleware(), interfaces.SaveServerMember())
+
+	identity := r.Group("/identity")
+	identity.POST("/save", common.TokenAuthMiddleware(), interfaces.SaveIdentity())
+
+	memberRole := r.Group("/memberRole")
+	memberRole.POST("/save", common.TokenAuthMiddleware(), interfaces.SaveMemberRole())
 	return r
 }

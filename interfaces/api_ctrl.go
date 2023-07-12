@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/inits"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ass"
@@ -11,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // Login 登录接口
@@ -136,6 +138,92 @@ func FindAllChannelByServer() gin.HandlerFunc {
 // SaveChannel 保存频道
 func SaveChannel() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		var (
+			channelRequest vo.ChannelRequest
+			serverID       int64
+			err            error
+		)
+		serverID, err = strconv.ParseInt(ctx.Param("serverID"), 0, 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
+			return
+		}
+		err = ctx.ShouldBindJSON(channelRequest)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errors.New("{channelRequest}参数错误"+err.Error()).Error())
+			return
+		}
+		err = ioc.Container.ServerService.SaveChannel(&models.Channel{
+			Name:     channelRequest.Name,
+			ServerId: serverID,
+			Label:    channelRequest.Label,
+			CreateAt: time.Now(),
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
+			return
+		}
+		ctx.JSON(http.StatusOK, "")
+	}
+}
 
+// SaveServerMember 保存服务器人员(加入服务器)
+func SaveServerMember() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var serverMemberRequest vo.ServerMemberRequest
+		err := ctx.ShouldBindJSON(serverMemberRequest)
+		if err != nil {
+			return
+		}
+		value, exists := ctx.Get(constant.UserName)
+		if !exists {
+			ctx.JSON(http.StatusBadRequest, errors.New("user not be found"+err.Error()).Error())
+			return
+		}
+		err = ioc.Container.ServerService.SaveServerMember(&models.ServerMember{
+			ServerId:   serverMemberRequest.ServerID,
+			MemberName: serverMemberRequest.MemberName,
+			InviteId:   serverMemberRequest.InviteId,
+			UserEmail:  value.(string)})
+		if err != nil {
+			return
+		}
+		ctx.JSON(http.StatusOK, "you have in the waiting list")
+	}
+}
+
+// SaveIdentity 保存身份组
+func SaveIdentity() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var identityRequest vo.IdentityRequest
+		err := ctx.ShouldBindJSON(identityRequest)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
+			return
+		}
+		err = ioc.Container.ServerService.SaveIdentity(ass.IdentityRequestToModel(identityRequest))
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
+			return
+		}
+		ctx.JSON(http.StatusOK, "success")
+	}
+}
+
+// SaveMemberRole 保存身份角色
+func SaveMemberRole() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var memberRoleRequest vo.MemberRoleRequest
+		err := ctx.ShouldBindJSON(memberRoleRequest)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
+			return
+		}
+		err = ioc.Container.ServerService.SaveMemberRole(ass.MemberRoleRequestToModel(memberRoleRequest))
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
+			return
+		}
+		ctx.JSON(http.StatusOK, "success")
 	}
 }

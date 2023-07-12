@@ -19,3 +19,30 @@ type ServerRequest struct {
 	Name   string   `json:"name"`
 	Labels []string `json:"labels"`
 }
+
+// ChannelRequest 创建频道请求体
+type ChannelRequest struct {
+	Name  string `json:"name"`
+	Label string `json:"label"`
+}
+
+// ServerMemberRequest 创建成员请求体
+type ServerMemberRequest struct {
+	ServerID   int64  `json:"server_id"`
+	MemberName string `json:"member_name"`
+	InviteId   int64  `json:"invite_id"`
+}
+
+// IdentityRequest 创建身份组请求体
+type IdentityRequest struct {
+	Name       string `json:"name"`
+	ChannelID  int64  `json:"channel_id"`
+	MemberRole string `json:"member_role"`
+}
+
+// MemberRoleRequest 创建成员角色请求体
+type MemberRoleRequest struct {
+	Name        string   `json:"name"`
+	ChannelID   int64    `json:"channel_id"`
+	Permissions []string `json:"permissions"`
+}

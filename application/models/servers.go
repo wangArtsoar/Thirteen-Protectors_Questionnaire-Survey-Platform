@@ -41,8 +41,9 @@ type ServerMember struct {
 	Channels   []string  `json:"channels"`  // 频道列表
 	CreateAt   time.Time `json:"create_at"`
 	IsDelete   int       `json:"is_delete"`
-	IsRobot    int       `json:"is_robot"` // 是否为机器人
-	IsMute     int       `json:"is_mute"`  // 是否被禁言
+	IsRobot    int       `json:"is_robot"`   // 是否为机器人
+	IsMute     int       `json:"is_mute"`    // 是否被禁言
+	IsWaiting  int       `json:"is_waiting"` // 是否在等待通过
 }
 
 // Identity 身份
