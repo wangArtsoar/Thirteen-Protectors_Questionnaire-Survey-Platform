@@ -13,8 +13,18 @@ var _ facade.IServerRepo = new(ServerRepo)
 type ServerRepo struct {
 }
 
+func (s *ServerRepo) ExistServerInNameAndOwner(serverName string, ownerEmail string) (bool, error) {
+	return orm.NewXorm().Where("Name = ? and owner_email = ?", serverName, ownerEmail).Exist(&models.Server{})
+}
+
 func (s *ServerRepo) SaveServer(session *xorm.Session, server *models.Server) (int64, error) {
-	return session.InsertOne(server)
+	var lastInsertId int64
+	sql := `INSERT INTO server(name, create_at, owner_id, owner_email) VALUES ($1,$2,$3,$4) RETURNING id`
+	if err := session.DB().QueryRow(sql,
+		server.Name, server.CreateAt, server.OwnerId, server.OwnerEmail).Scan(&lastInsertId); err != nil {
+		return 0, err
+	}
+	return lastInsertId, nil
 }
 
 func (s *ServerRepo) FindAllServerByUser(userEmail string) ([]*models.Server, error) {

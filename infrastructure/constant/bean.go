@@ -14,3 +14,11 @@ const Default int = 0
 
 // Record 条数
 const Record int = 50
+
+const UserName string = "user-name"
+
+// 表名
+const (
+	Server string = "server"
+	Label  string = "label"
+)

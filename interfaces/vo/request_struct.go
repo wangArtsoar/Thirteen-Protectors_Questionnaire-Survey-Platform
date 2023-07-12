@@ -13,3 +13,9 @@ type RegisterRequest struct {
 	Password string `json:"password"`
 	RoleName string `json:"roleName"`
 }
+
+// ServerRequest 创建服务器请求体
+type ServerRequest struct {
+	Name   string   `json:"name"`
+	Labels []string `json:"labels"`
+}

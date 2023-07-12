@@ -18,5 +18,14 @@ func Router() *gin.Engine {
 	protected.Use(common.TokenAuthMiddleware())
 	protected.GET("/demo", common.TokenAuthMiddleware(), interfaces.Demo())
 	protected.GET("/logout", common.LogoutHandle())
+
+	server := r.Group("/server")
+	server.Use(common.TokenAuthMiddleware())
+	server.POST("/save", common.TokenAuthMiddleware(), interfaces.SaveServer())
+	server.GET("/findAllCurrentUser", common.TokenAuthMiddleware(), interfaces.FindAllServerByUserEmail())
+
+	channel := r.Group("/channel")
+	channel.GET("/findAllByServerId", common.TokenAuthMiddleware(), interfaces.FindAllChannelByServer())
+	channel.POST("/Save", common.TokenAuthMiddleware(), interfaces.SaveChannel())
 	return r
 }

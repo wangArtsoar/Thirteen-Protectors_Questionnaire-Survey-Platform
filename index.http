@@ -29,3 +29,22 @@ Accept: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODg3ODM0NDksImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6IlN1cGVyQHN1cGVyLmNvbSIsInJvbGUiOnsiU1VQRVIiOlsiYWRtaW46OmNyZWF0ZSIsImFkbWluOjpzZWxlY3QiLCJhZG1pbjo6dXBkYXRlIiwiYWRtaW46OmRlbGV0ZSIsIm1hbmFnZTo6Y3JlYXRlIiwibWFuYWdlOjpzZWxlY3QiLCJtYW5hZ2U6OnVwZGF0ZSIsIm1hbmFnZTo6ZGVsZXRlIl19fQ.ZJd9dunhdTRpITkihhot_8UEVBAtltu0O8cDIiSV1v8
 
 
+### SaveServer
+POST http://localhost:8080/server/save
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODkxNDQ1ODAsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6IlN1cGVyQHN1cGVyLmNvbSIsInJvbGUiOiJTVVBFUiJ9.7B3d8LZ7c5DPiMKtQyIbJM2DYzB0nhZszMQwtKa7W7s
+Content-Type: application/json
+
+{
+  "name" : "xiaoyi_second",
+  "labels" : [
+    "a","b","c","d","e"
+  ]
+}
+
+
+###
+PUT http://localhost:8080/channel/save/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODkxNDQ1ODAsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6IlN1cGVyQHN1cGVyLmNvbSIsInJvbGUiOiJTVVBFUiJ9.7B3d8LZ7c5DPiMKtQyIbJM2DYzB0nhZszMQwtKa7W7s
+Content-Type: application/json
+
+

@@ -2,6 +2,7 @@ package common
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/user"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/vo"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -33,6 +34,7 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 		// check if subject from database
 		repo := user.UserRepo{}
 		if flag, err := repo.ExistByEmail(name); flag && err == nil {
+			c.Set(constant.UserName, name)
 			// 下一步
 			c.Next()
 		} else {
