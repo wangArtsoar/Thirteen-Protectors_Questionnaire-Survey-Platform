@@ -72,11 +72,11 @@ type Label struct {
 // Message 消息
 type Message struct {
 	Id          int64     `json:"id" xorm:"'id' pk autoincr"`
-	Message     string    `json:"message"`
-	Image       string    `json:"image"`
-	Video       string    `json:"video"`
+	Type        int       `json:"type"`
+	Content     string    `json:"content"`
 	SenderId    int64     `json:"sender_id"` // ServerMember Id
-	Date        time.Time `json:"date"`
+	SendName    string    `json:"send_name"`
+	SendDate    time.Time `json:"send_date"`
 	IsWithdraw  int       `json:"is_withdraw"`
 	LimitedTime time.Time `json:"limited_time"` // 撤回限时
 }

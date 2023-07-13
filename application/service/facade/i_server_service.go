@@ -10,4 +10,7 @@ type IServerService interface {
 	SaveServerMember(serverMember *models.ServerMember) error
 	SaveIdentity(identity *models.Identity) error
 	SaveMemberRole(role *models.MemberRole) error
+	SaveMessage(message *models.Message, userEmail string) (*models.Message, error)
+	FindMessageByKeyword(keyword string) ([]*models.Message, error)
+	FindMessageByLimit(limit int) ([]*models.Message, error)
 }

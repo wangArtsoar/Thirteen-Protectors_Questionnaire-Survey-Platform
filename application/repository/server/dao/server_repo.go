@@ -6,6 +6,8 @@ import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/orm"
 	"github.com/go-xorm/xorm"
+	"github.com/lib/pq"
+	"time"
 )
 
 var _ facade.IServerRepo = new(ServerRepo)
@@ -39,6 +41,11 @@ func (s *ServerRepo) FindServerByName(serverName string) ([]*models.Server, erro
 	return servers, orm.NewXorm().Where("name = ? and is_delete = ?", serverName, constant.Default).Find(servers)
 }
 
-func (s *ServerRepo) EditServerById(Id int64, server *models.Server) (int64, error) {
-	return orm.NewXorm().Id(Id).Where("is_delete = ?", constant.Default).Update(server)
+func (s *ServerRepo) EditServerById(session *xorm.Session, Id int64, server *models.Server) error {
+	sql := `UPDATE server SET labels = $1 and update_at = $2 WHERE id = $3`
+	labels := server.Labels
+	if _, err := session.Exec(sql, pq.Array(labels), time.Now(), Id); err != nil {
+		return err
+	}
+	return nil
 }

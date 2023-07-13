@@ -7,7 +7,6 @@ import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/service/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/orm"
-	"github.com/lib/pq"
 	"time"
 )
 
@@ -22,6 +21,30 @@ type ServerService struct {
 	MemberRoleRepo   facade2.IMemberRoleRepo   `inject:"MemberRoleRepo"`
 	MessageRepo      facade2.IMessageRepo      `inject:"MessageRepo"`
 	UserRepo         user.IUserRepo            `inject:"UserRepo"`
+}
+
+func (s *ServerService) FindMessageByLimit(limit int) ([]*models.Message, error) {
+	return s.MessageRepo.FindLastRecords(limit)
+}
+
+func (s *ServerService) FindMessageByKeyword(keyword string) ([]*models.Message, error) {
+	return s.MessageRepo.FindByKeywords(keyword)
+}
+
+// SaveMessage 保存信息
+func (s *ServerService) SaveMessage(message *models.Message, userEmail string) (*models.Message, error) {
+	member, err := s.ServerMemberRepo.FindByUser(userEmail)
+	if err != nil {
+		return nil, err
+	}
+	message = settingMessage(message, member)
+	return s.MessageRepo.SaveMessage(message)
+}
+
+func settingMessage(message *models.Message, member *models.ServerMember) *models.Message {
+	message.SenderId = member.Id
+	message.SendName = member.MemberName
+	return message
 }
 
 // SaveMemberRole 保存成员角色
@@ -136,10 +159,6 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 			}
 		}
 	}()
-	var labels = make([]string, len(server.Labels))
-	for i, label := range server.Labels {
-		labels[i] = label
-	}
 	serverId, err := s.ServerRepo.SaveServer(session, &models.Server{
 		Name:       server.Name,
 		OwnerId:    owner.ID,
@@ -150,8 +169,8 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 		return err
 	}
 	var v = make([]models.Label, 0)
-	for _, label := range labels {
-		exist, err := session.Table(constant.Label).Where("name = ?", label).Exist(&models.Label{})
+	for _, label := range server.Labels {
+		exist, err := s.LabelRepo.ExistByName(session, label)
 		if err != nil {
 			return err
 		}
@@ -169,9 +188,7 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 		}
 	}
 
-	sql := `UPDATE server SET labels = $1 and update_at = $2 WHERE id = $3`
-
-	if _, err = session.Exec(sql, pq.Array(labels), time.Now(), serverId); err != nil {
+	if err = s.ServerRepo.EditServerById(session, serverId, server); err != nil {
 		return err
 	}
 

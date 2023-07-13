@@ -46,3 +46,9 @@ type MemberRoleRequest struct {
 	ChannelID   int64    `json:"channel_id"`
 	Permissions []string `json:"permissions"`
 }
+
+// MessageRequest 创建信息请求体
+type MessageRequest struct {
+	Type    int    `json:"type"`
+	Content string `json:"content"`
+}

@@ -9,10 +9,15 @@ import (
 // Router 注册中心
 func Router() *gin.Engine {
 	r := gin.Default()
+
+	// 资源接口
+	r.Static("/html", "./web/html")
+
 	// 公共接口
 	public := r.Group("/auth")
 	public.POST("/login", interfaces.Login())
 	public.POST("/register", interfaces.Register())
+
 	// 受保护的接口
 	protected := r.Group("/exam")
 	protected.Use(common.TokenAuthMiddleware())
@@ -36,5 +41,10 @@ func Router() *gin.Engine {
 
 	memberRole := r.Group("/memberRole")
 	memberRole.POST("/save", common.TokenAuthMiddleware(), interfaces.SaveMemberRole())
+
+	message := r.Group("/message")
+	message.POST("/save", common.TokenAuthMiddleware(), interfaces.SaveMessage())
+	message.GET("/findByKeyword", common.TokenAuthMiddleware(), interfaces.FindMessageByKeyword())
+	message.GET("/findByLimit", common.TokenAuthMiddleware(), interfaces.FindMessageLimit())
 	return r
 }

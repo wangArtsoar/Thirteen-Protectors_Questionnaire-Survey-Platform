@@ -148,7 +148,7 @@ func SaveChannel() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
 			return
 		}
-		err = ctx.ShouldBindJSON(channelRequest)
+		err = ctx.ShouldBindJSON(&channelRequest)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("{channelRequest}参数错误"+err.Error()).Error())
 			return
@@ -171,7 +171,7 @@ func SaveChannel() gin.HandlerFunc {
 func SaveServerMember() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var serverMemberRequest vo.ServerMemberRequest
-		err := ctx.ShouldBindJSON(serverMemberRequest)
+		err := ctx.ShouldBindJSON(&serverMemberRequest)
 		if err != nil {
 			return
 		}
@@ -196,7 +196,7 @@ func SaveServerMember() gin.HandlerFunc {
 func SaveIdentity() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var identityRequest vo.IdentityRequest
-		err := ctx.ShouldBindJSON(identityRequest)
+		err := ctx.ShouldBindJSON(&identityRequest)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
 			return
@@ -214,7 +214,7 @@ func SaveIdentity() gin.HandlerFunc {
 func SaveMemberRole() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var memberRoleRequest vo.MemberRoleRequest
-		err := ctx.ShouldBindJSON(memberRoleRequest)
+		err := ctx.ShouldBindJSON(&memberRoleRequest)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
 			return
@@ -225,5 +225,61 @@ func SaveMemberRole() gin.HandlerFunc {
 			return
 		}
 		ctx.JSON(http.StatusOK, "success")
+	}
+}
+
+// SaveMessage 保存信息
+func SaveMessage() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var (
+			messageRequest vo.MessageRequest
+			message        *models.Message
+		)
+		err := ctx.ShouldBindJSON(&messageRequest)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
+			return
+		}
+		name, exists := ctx.Get(constant.UserName)
+		if !exists {
+			ctx.JSON(http.StatusBadRequest, errors.New("user not be found"+err.Error()).Error())
+			return
+		}
+		message, err = ioc.Container.ServerService.SaveMessage(ass.MessageRequestToModel(messageRequest), name.(string))
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
+			return
+		}
+		ctx.JSON(http.StatusOK, ass.MessageModelToResponse(message))
+	}
+}
+
+// FindMessageByKeyword 通过关键词查询 message
+func FindMessageByKeyword() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		keyword := ctx.Param("keyword")
+		messageList, err := ioc.Container.ServerService.FindMessageByKeyword(keyword)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
+			return
+		}
+		ctx.JSON(http.StatusOK, messageList)
+	}
+}
+
+// FindMessageLimit 获取对话信息
+func FindMessageLimit() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		limit, err := strconv.Atoi(ctx.Param("limit"))
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
+			return
+		}
+		messages, err := ioc.Container.ServerService.FindMessageByLimit(limit)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
+			return
+		}
+		ctx.JSON(http.StatusOK, ass.MessageModelToResponseList(messages))
 	}
 }
