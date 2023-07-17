@@ -1,5 +1,12 @@
 package constant
 
+const (
+	SUPER  = "super"
+	ADMIN  = "admin"
+	MANAGE = "manage"
+	USER   = "user"
+)
+
 // permissions
 const (
 	AdminCreate = "admin::create"

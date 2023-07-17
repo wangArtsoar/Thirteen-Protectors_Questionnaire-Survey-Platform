@@ -49,7 +49,7 @@ func settingMessage(message *models.Message, member *models.ServerMember) *model
 
 // SaveMemberRole 保存成员角色
 func (s *ServerService) SaveMemberRole(role *models.MemberRole) error {
-	if _, err := s.MemberRoleRepo.NewAMemberRole(role); err != nil {
+	if _, err := s.MemberRoleRepo.NewAMemberRole(orm.NewXorm().NewSession(), role); err != nil {
 		return err
 	}
 	return nil
@@ -193,6 +193,14 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 	// join in server member
 	if _, err = session.Table(constant.ServerMemberTable).InsertOne(
 		createNewServerMember(owner, createSimpleServerMember(serverId, owner))); err != nil {
+		return err
+	}
+	// save server member role
+	if _, err = s.MemberRoleRepo.NewAMemberRole(session, &models.MemberRole{
+		ServerId:    serverId,
+		Name:        constant.OWNER,
+		Permissions: constant.Owner(),
+	}); err != nil {
 		return err
 	}
 	// commit
