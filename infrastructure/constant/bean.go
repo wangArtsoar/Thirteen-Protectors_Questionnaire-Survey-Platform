@@ -9,8 +9,8 @@ const Header string = "Bearer "
 // Yes 删除
 const Yes int = 1
 
-// Default 默认
-const Default int = 0
+// No 默认
+const No int = 0
 
 // Record 条数
 const Record int = 50
@@ -19,6 +19,11 @@ const UserName string = "user-name"
 
 // 表名
 const (
-	Server string = "server"
-	Label  string = "label"
+	UserTable         string = "user"
+	ServerTable       string = "server"
+	LabelTable        string = "label"
+	ServerMemberTable string = "server_member"
 )
+
+// Default 默认
+const Default string = "default"

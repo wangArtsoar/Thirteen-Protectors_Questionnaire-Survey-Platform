@@ -6,7 +6,7 @@ import (
 )
 
 type IChannelRepo interface {
-	CreateChannel(session *xorm.Session, channel *models.Channel) (int64, error)
-	FindAllByServerId(limit int, serverId int64) ([]*models.Channel, error)
-	FindOneByChannelName(channelName string) (*models.Channel, error)
+	CreateChannel(*xorm.Session, *models.Channel) (int64, error)
+	FindAllByServerId(int, int64) ([]*models.Channel, error)
+	FindOneByChannelName(string) (*models.Channel, error)
 }

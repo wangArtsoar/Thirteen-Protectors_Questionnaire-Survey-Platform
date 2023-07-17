@@ -29,7 +29,7 @@ func (m *MessageRepo) UpdateMessage(id int64, message *models.Message) (int64, e
 func (m *MessageRepo) FindLastRecords(limit int) ([]*models.Message, error) {
 	var messages []*models.Message
 	sql, args, err := builder.Select().From("message").
-		Where(builder.Eq{"is_withdraw": constant.Default}).
+		Where(builder.Eq{"is_withdraw": constant.No}).
 		OrderBy("send_date ASC").ToSQL()
 	if err != nil {
 		return nil, err
@@ -45,6 +45,6 @@ func (m *MessageRepo) FindLastRecords(limit int) ([]*models.Message, error) {
 
 func (m *MessageRepo) FindByKeywords(keywords string) ([]*models.Message, error) {
 	var messages []*models.Message
-	return messages, orm.NewXorm().Where("type = ? and content LIKE ?", constant.Default, "%"+keywords+"%").
+	return messages, orm.NewXorm().Where("type = ? and content LIKE ?", constant.No, "%"+keywords+"%").
 		Find(messages)
 }

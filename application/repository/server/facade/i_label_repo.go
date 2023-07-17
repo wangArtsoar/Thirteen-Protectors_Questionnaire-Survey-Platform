@@ -6,7 +6,7 @@ import (
 )
 
 type ILabelRepo interface {
-	SaveLabel(label []*models.Label) (int64, error)
+	SaveLabel(session *xorm.Session, label []*models.Label) (int64, error)
 	FindAll() ([]*models.Label, error)
-	ExistByName(session *xorm.Session, name string) (bool, error)
+	ExistByName(name string) (bool, error)
 }

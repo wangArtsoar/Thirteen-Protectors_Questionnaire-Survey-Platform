@@ -2,12 +2,14 @@ package service
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+	repo "Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/user"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/service/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/common"
-	constant2 "Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
-	vo2 "Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/vo"
-	errors "errors"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/orm"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/vo"
+	"errors"
 	"github.com/goccy/go-json"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -18,18 +20,19 @@ import (
 var _ facade.IUserService = new(UserService)
 
 type UserService struct {
-	UserRepo user.IUserRepo `inject:"UserRepo"`
+	UserRepo   user.IUserRepo   `inject:"UserRepo"`
+	ServerRepo repo.IServerRepo `inject:"ServerRepo"`
 }
 
 // Login return a loginResponse from given loginDto
-func (u *UserService) Login(dto *vo2.LoginDto) (*vo2.LoginResponse, error) {
+func (srv *UserService) Login(dto *vo.LoginDto) (*vo.LoginResponse, error) {
 	// 查找用户
-	user, err := u.UserRepo.FindByEmail(dto.Email)
+	userInfo, err := srv.UserRepo.FindByEmail(dto.Email)
 	if err != nil {
 		return nil, err
 	}
 	var roleMap = make(map[string]any)
-	if err = json.Unmarshal(user.Role, &roleMap); err != nil {
+	if err = json.Unmarshal(userInfo.Role, &roleMap); err != nil {
 		return nil, err
 	}
 	var roleName string
@@ -37,52 +40,102 @@ func (u *UserService) Login(dto *vo2.LoginDto) (*vo2.LoginResponse, error) {
 		roleName = k
 		if k != "SUPER" {
 			// 检查密码
-			if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(dto.Password)); err != nil {
+			if err = bcrypt.CompareHashAndPassword([]byte(userInfo.Password), []byte(dto.Password)); err != nil {
 				return nil, err
 			}
 		}
 	}
 	// 创建新token
-	token := common.CreateNewToken(user.Email, roleName, false)
-	return &vo2.LoginResponse{
-		Authentication: constant2.Header + token,
+	token := common.CreateNewToken(userInfo.Email, roleName, false)
+	return &vo.LoginResponse{
+		Authentication: constant.Header + token,
 	}, nil
 }
 
 // Register return a registerResponse from given registerRequest
-func (u *UserService) Register(request *vo2.RegisterRequest) (*vo2.RegisterResponse, error) {
-	// check email database if exist
-	flag, err := u.UserRepo.ExistByEmail(request.Email)
-	if err != nil {
+func (srv *UserService) Register(request *vo.RegisterRequest) (*vo.RegisterResponse, error) {
+	if err := checkEmail(srv, request.Email); err != nil {
 		return nil, err
 	}
-	if flag {
-		return nil, errors.New("the user has existed")
-	}
-	id := uuid.New().String()
-	password, err := bcrypt.GenerateFromPassword([]byte(request.Password), 10)
-	if err != nil {
+	// create a new User struct
+	id, newUser, err := createNewUser(request)
+	// begin a database session
+	session := orm.NewXorm().NewSession()
+	if err = session.Begin(); err != nil {
 		return nil, err
 	}
-	role := constant2.User()
-	roleJSON, err := json.Marshal(role)
-	_, err = u.UserRepo.SaveUser(models.User{
-		ID:       id,
-		Name:     request.Name,
-		Email:    request.Email,
-		Password: string(password),
-		CreateAt: time.Now(),
-		Role:     roleJSON,
-	})
-	if err != nil {
+	defer session.Close()
+	// save user
+	if _, err = srv.UserRepo.SaveUser(session, newUser); err != nil {
+		return nil, err
+	}
+	// save server
+	var serverId int64
+	if serverId, err = srv.ServerRepo.SaveServer(session, createNewServer(id, request.Email, "")); err != nil {
+		return nil, err
+	}
+	// update user
+	newUser.ServerIds, _ = json.Marshal(serverId)
+	if _, err = session.Table(constant.UserTable).Where("email = ?", request.Email).Update(&newUser); err != nil {
+		return nil, err
+	}
+	// commit
+	if err = session.Commit(); err != nil {
 		return nil, err
 	}
 	token := common.CreateNewToken(request.Email, "USER", false)
 	if err != nil {
 		return nil, err
 	}
-	return &vo2.RegisterResponse{
+	return &vo.RegisterResponse{
 		Message:        "注册成功",
-		Authentication: constant2.Header + token,
+		Authentication: constant.Header + token,
 	}, nil
+}
+
+// createNewServer
+func createNewServer(id, email, name string) *models.Server {
+	if len(name) < 1 {
+		name = constant.Default
+	}
+	return &models.Server{
+		Name:       name,
+		CreateAt:   time.Now(),
+		OwnerId:    id,
+		OwnerEmail: email,
+	}
+}
+
+// createNewUser
+func createNewUser(request *vo.RegisterRequest) (string, models.User, error) {
+	id := uuid.New().String()
+	password, err := bcrypt.GenerateFromPassword([]byte(request.Password), 10)
+	if err != nil {
+		return "", models.User{}, err
+	}
+	role := constant.User()
+	roleJSON, err := json.Marshal(role)
+	serverIds, err := json.Marshal([]string{})
+	return id, models.User{
+		ID:        id,
+		Name:      request.Name,
+		Email:     request.Email,
+		Password:  string(password),
+		CreateAt:  time.Now(),
+		Role:      roleJSON,
+		ServerIds: serverIds,
+	}, nil
+}
+
+// checkEmail
+func checkEmail(srv *UserService, email string) error {
+	// check email database if exist
+	flag, err := srv.UserRepo.ExistByEmail(email)
+	if err != nil {
+		return err
+	}
+	if flag {
+		return errors.New("the user has existed")
+	}
+	return nil
 }

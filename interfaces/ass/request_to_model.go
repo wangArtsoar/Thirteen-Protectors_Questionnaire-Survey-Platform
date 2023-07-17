@@ -41,3 +41,23 @@ func MessageRequestToModel(request vo.MessageRequest) *models.Message {
 		LimitedTime: time.Now().Add(time.Minute * 2),
 	}
 }
+
+// ChannelRequestToModel 将 ChannelRequest 转换成 model
+func ChannelRequestToModel(request vo.ChannelRequest, serverID int64) *models.Channel {
+	return &models.Channel{
+		Name:     request.Name,
+		ServerId: serverID,
+		Label:    request.Label,
+		CreateAt: time.Now(),
+	}
+}
+
+// ServerMemberRequestToModel 将 ServerMemberRequest 转换成 model
+func ServerMemberRequestToModel(request vo.ServerMemberRequest, email string) *models.ServerMember {
+	return &models.ServerMember{
+		ServerId:   request.ServerID,
+		MemberName: request.MemberName,
+		InviteId:   request.InviteId,
+		UserEmail:  email,
+	}
+}

@@ -3,16 +3,13 @@ package interfaces
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/inits"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ass"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ioc"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/vo"
 	"errors"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 // Login 登录接口
@@ -57,22 +54,11 @@ func Register() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
 			return
 		}
-		service := ioc.Container.UserService
-		if service == nil {
-			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误，service 获取不到"+err.Error()).Error())
-			return
-		}
 		response, err = ioc.Container.UserService.Register(&register)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
-		server := inits.Server(register.Name)
-		err = ioc.Container.ServerService.SaveServer(&server, register.Email)
-		if err != nil {
-			log.Println("server inits fail")
-		}
-		log.Println("server inits")
 		ctx.JSON(http.StatusOK, response)
 	}
 }
@@ -143,23 +129,16 @@ func SaveChannel() gin.HandlerFunc {
 			serverID       int64
 			err            error
 		)
-		serverID, err = strconv.ParseInt(ctx.Param("serverID"), 0, 64)
-		if err != nil {
+		if serverID, err = strconv.ParseInt(ctx.Param("serverID"), 0, 64); err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
 			return
 		}
-		err = ctx.ShouldBindJSON(&channelRequest)
-		if err != nil {
+		if err = ctx.ShouldBindJSON(&channelRequest); err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("{channelRequest}参数错误"+err.Error()).Error())
 			return
 		}
-		err = ioc.Container.ServerService.SaveChannel(&models.Channel{
-			Name:     channelRequest.Name,
-			ServerId: serverID,
-			Label:    channelRequest.Label,
-			CreateAt: time.Now(),
-		})
-		if err != nil {
+		if err = ioc.Container.ServerService.SaveChannel(ass.ChannelRequestToModel(
+			channelRequest, serverID)); err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
@@ -171,21 +150,18 @@ func SaveChannel() gin.HandlerFunc {
 func SaveServerMember() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var serverMemberRequest vo.ServerMemberRequest
-		err := ctx.ShouldBindJSON(&serverMemberRequest)
-		if err != nil {
+		if err := ctx.ShouldBindJSON(&serverMemberRequest); err != nil {
+			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
 			return
 		}
 		value, exists := ctx.Get(constant.UserName)
 		if !exists {
-			ctx.JSON(http.StatusBadRequest, errors.New("user not be found"+err.Error()).Error())
+			ctx.JSON(http.StatusBadRequest, errors.New("user not be found").Error())
 			return
 		}
-		err = ioc.Container.ServerService.SaveServerMember(&models.ServerMember{
-			ServerId:   serverMemberRequest.ServerID,
-			MemberName: serverMemberRequest.MemberName,
-			InviteId:   serverMemberRequest.InviteId,
-			UserEmail:  value.(string)})
-		if err != nil {
+		if err := ioc.Container.ServerService.SaveServerMember(ass.ServerMemberRequestToModel(
+			serverMemberRequest, value.(string))); err != nil {
+			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
 		ctx.JSON(http.StatusOK, "you have in the waiting list")

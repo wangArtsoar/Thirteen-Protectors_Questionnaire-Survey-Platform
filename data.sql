@@ -157,3 +157,5 @@ alter table public.message
 
 create index if not exists message_sender_id_index
     on public.message (sender_id);
+
+

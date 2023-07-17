@@ -65,33 +65,46 @@ func (s *ServerService) SaveIdentity(identity *models.Identity) error {
 
 // SaveServerMember 保存服务器成员
 func (s *ServerService) SaveServerMember(serverMember *models.ServerMember) error {
-	email := serverMember.UserEmail
-	userInfo, err := s.UserRepo.FindByEmail(email)
+	userInfo, err := s.UserRepo.FindByEmail(serverMember.UserEmail)
 	if err != nil {
 		return err
 	}
 	// init ServerMember
-	serverMember.UserName = userInfo.Name
-	serverMember.UserId = userInfo.ID
-	serverMember.CreateAt = time.Now()
-	serverMember.IdentityId = int64(constant.Default)
+	newServerMember := createNewServerMember(userInfo, serverMember)
 	// find channel limit 10 from serverId
 	channels, err := s.ChannelRepo.FindAllByServerId(10, serverMember.ServerId)
 	if err != nil {
 		return err
 	}
 	for _, channel := range channels {
-		serverMember.Channels = append(serverMember.Channels, channel.Name)
+		newServerMember.Channels = append(serverMember.Channels, channel.Name)
 	}
-	if _, err = s.ServerMemberRepo.NewAServerMember(serverMember); err != nil {
+	if _, err = s.ServerMemberRepo.NewAServerMember(newServerMember); err != nil {
 		return err
 	}
 	return nil
 }
 
+// createNewServerMember
+func createNewServerMember(userInfo *models.User, member *models.ServerMember) *models.ServerMember {
+	return &models.ServerMember{
+		ServerId:   member.ServerId,
+		MemberName: member.MemberName,
+		UserName:   userInfo.Name,
+		UserId:     userInfo.ID,
+		UserEmail:  member.UserEmail,
+		InviteId:   member.InviteId,
+		CreateAt:   time.Now(),
+		IdentityId: int64(constant.No),
+	}
+}
+
 // SaveChannel 保存频道
 func (s *ServerService) SaveChannel(channel *models.Channel) error {
-	var err error
+	var (
+		err  error
+		flag bool
+	)
 	session := orm.NewXorm().NewSession()
 	defer session.Close()
 	if err = session.Begin(); err != nil {
@@ -99,26 +112,19 @@ func (s *ServerService) SaveChannel(channel *models.Channel) error {
 	}
 	defer func() {
 		if err != nil {
-			err = session.Rollback()
-			if err != nil {
-				return
-			}
+			session.Rollback()
 		}
 	}()
-	flag, err := session.Table("label").Where("name = ?", channel.Label).Exist(&models.Label{})
+	flag, err = s.LabelRepo.ExistByName(channel.Label)
 	if err != nil {
 		return err
 	}
-	if flag {
-		if _, err = s.ChannelRepo.CreateChannel(session, channel); err != nil {
+	if !flag {
+		if _, err = s.LabelRepo.SaveLabel(session, []*models.Label{createNewLabel(channel)}); err != nil {
 			return err
 		}
-		return session.Commit()
 	}
-	if _, err = session.Table("label").InsertOne(models.Label{
-		ServerId: channel.ServerId,
-		Name:     channel.Label,
-	}); err != nil {
+	if _, err = s.ChannelRepo.CreateChannel(session, channel); err != nil {
 		return err
 	}
 	return session.Commit()
@@ -126,7 +132,7 @@ func (s *ServerService) SaveChannel(channel *models.Channel) error {
 
 // FindAllChannelByServerId 根据服务器ID查询全部频道
 func (s *ServerService) FindAllChannelByServerId(serverId int64) ([]*models.Channel, error) {
-	return s.ChannelRepo.FindAllByServerId(constant.Default, serverId)
+	return s.ChannelRepo.FindAllByServerId(constant.No, serverId)
 }
 
 // FindAllServerByUserEmail 根据创建者查询全部服务器
@@ -136,42 +142,32 @@ func (s *ServerService) FindAllServerByUserEmail(userEmail string) ([]*models.Se
 
 // SaveServer 保存服务器
 func (s *ServerService) SaveServer(server *models.Server, email string) error {
+	// check server
 	if flag, err := s.ServerRepo.ExistServerInNameAndOwner(server.Name, email); flag != false || err != nil {
 		return err
 	}
-
+	// get owner information
 	owner, err := s.UserRepo.FindByEmail(email)
 	if err != nil {
 		return err
 	}
-
+	// begin a database session
 	session := orm.NewXorm().NewSession()
 	defer session.Close()
-
-	if err := session.Begin(); err != nil {
+	if err = session.Begin(); err != nil {
 		return err
 	}
-	defer func() {
-		if err != nil {
-			err := session.Rollback()
-			if err != nil {
-				return
-			}
-		}
-	}()
-	serverId, err := s.ServerRepo.SaveServer(session, &models.Server{
-		Name:       server.Name,
-		OwnerId:    owner.ID,
-		OwnerEmail: email,
-		CreateAt:   time.Now(),
-	})
+	// save server
+	var serverId int64
+	serverId, err = s.ServerRepo.SaveServer(session, createNewServer(owner.ID, email, server.Name))
 	if err != nil {
 		return err
 	}
 	var v = make([]models.Label, 0)
 	for _, label := range server.Labels {
-		exist, err := s.LabelRepo.ExistByName(session, label)
-		if err != nil {
+		var exist bool
+		if exist, err = s.LabelRepo.ExistByName(label); err != nil {
+			session.Rollback()
 			return err
 		}
 		if exist {
@@ -182,15 +178,40 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 			Name:     label,
 		})
 	}
+	// save label
 	if len(v) > 0 {
 		if _, err = session.Insert(&v); err != nil {
+			session.Rollback()
 			return err
 		}
 	}
-
+	// update server
 	if err = s.ServerRepo.EditServerById(session, serverId, server); err != nil {
+		session.Rollback()
 		return err
 	}
-
+	// join in server member
+	if _, err = session.Table(constant.ServerMemberTable).InsertOne(
+		createNewServerMember(owner, createSimpleServerMember(serverId, owner))); err != nil {
+		return err
+	}
+	// commit
 	return session.Commit()
+}
+
+// createNewLabel
+func createNewLabel(channel *models.Channel) *models.Label {
+	return &models.Label{
+		ServerId: channel.ServerId,
+		Name:     channel.Label,
+	}
+}
+
+// createSimpleServerMember use in init server
+func createSimpleServerMember(serverId int64, owner *models.User) *models.ServerMember {
+	return &models.ServerMember{
+		ServerId:   serverId,
+		MemberName: owner.Name,
+		UserEmail:  owner.Email,
+	}
 }
