@@ -10,7 +10,7 @@ Content-Type: application/json
 ### Demo
 GET http://localhost:8080/exam/demo
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODk2NjEwNDUsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIiwicm9sZSI6IlVTRVIifQ.NKxKXDBHJb-r-G5nhpPQDjj3oayBIrq4KXRxf_F3h7o
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODk3NTE2MzAsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIiwicm9sZSI6IlVTRVIifQ.isYQqjc46_vagrKCtXHqHwj536-0iX5w8G5qrYTtIm0
 
 
 ### Register
@@ -31,11 +31,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2O
 
 ### SaveServer
 POST http://localhost:8080/server/save
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODk2NjEyODUsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIiwicm9sZSI6IlVTRVIifQ.YG-pzXdU1N6dX3z7cbU-SIC1XQm005KpzROZcDBjpwE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODk3NTE2MzAsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIiwicm9sZSI6IlVTRVIifQ.isYQqjc46_vagrKCtXHqHwj536-0iX5w8G5qrYTtIm0
 Content-Type: application/json
 
 {
-  "name" : "xiaoyi_second",
+  "name" : "xiaoyi_first",
   "labels" : [
     "a","b","c","d","e"
   ]
@@ -73,4 +73,16 @@ Content-Type: application/json
 {
   "type" : 0,
   "content" : "你好"
+}
+
+
+###
+POST http://localhost:8080/identity/save
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODkzMTU1ODYsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6IlN1cGVyQHN1cGVyLmNvbSIsInJvbGUiOiJTVVBFUiJ9.4LEjPZg_ZUA3_iewaKZJ6ddcxL50DovGTHbsxRxzBQk
+Content-Type: application/json
+
+{
+  "name" : "one",
+  "server_id" : 30,
+  "member_role" : "adm"
 }

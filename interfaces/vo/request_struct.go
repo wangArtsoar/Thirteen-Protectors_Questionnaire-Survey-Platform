@@ -36,14 +36,14 @@ type ServerMemberRequest struct {
 // IdentityRequest 创建身份组请求体
 type IdentityRequest struct {
 	Name       string `json:"name"`
-	ChannelID  int64  `json:"channel_id"`
+	ServerID   int64  `json:"server_id"`
 	MemberRole string `json:"member_role"`
 }
 
 // MemberRoleRequest 创建成员角色请求体
 type MemberRoleRequest struct {
 	Name        string   `json:"name"`
-	ChannelID   int64    `json:"channel_id"`
+	ServerID    int64    `json:"server_id"`
 	Permissions []string `json:"permissions"`
 }
 

@@ -1,9 +1,12 @@
 package facade
 
-import "Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+import (
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+	"github.com/go-xorm/xorm"
+)
 
 type IServerMemberRepo interface {
-	NewAServerMember(member *models.ServerMember) (int64, error)
+	NewServerMember(session *xorm.Session, member *models.ServerMember) error
 	FindAllServerMember() ([]*models.ServerMember, error)
 	FindAllServerMemberByServerId(serverId int64) ([]*models.ServerMember, error)
 	FindAllServerMemberByChannel(channel *models.Channel) ([]*models.ServerMember, error)

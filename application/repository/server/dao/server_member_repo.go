@@ -5,6 +5,8 @@ import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/orm"
+	"github.com/go-xorm/xorm"
+	"github.com/lib/pq"
 )
 
 var _ facade.IServerMemberRepo = new(ServerMemberRepo)
@@ -21,8 +23,16 @@ func (s *ServerMemberRepo) FindByUser(userEmail string) (*models.ServerMember, e
 	return &serverMember, nil
 }
 
-func (s *ServerMemberRepo) NewAServerMember(member *models.ServerMember) (int64, error) {
-	return orm.NewXorm().InsertOne(member)
+func (s *ServerMemberRepo) NewServerMember(session *xorm.Session, member *models.ServerMember) error {
+	sql := `INSERT INTO server_member(
+                        user_id, user_email, user_name, server_id, member_name, identity_id, channels, create_at) 
+			VALUES (?,?,?,?,?,?,?,?)`
+	_, err := session.Exec(sql, member.UserId, member.UserEmail, member.UserName, member.ServerId, member.MemberName,
+		member.IdentityId, pq.Array([]string{}), member.CreateAt)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *ServerMemberRepo) FindAllServerMember() ([]*models.ServerMember, error) {

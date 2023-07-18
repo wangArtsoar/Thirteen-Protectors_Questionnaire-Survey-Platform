@@ -7,6 +7,7 @@ import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/service/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/orm"
+	"github.com/goccy/go-json"
 	"time"
 )
 
@@ -57,7 +58,7 @@ func (s *ServerService) SaveMemberRole(role *models.MemberRole) error {
 
 // SaveIdentity 保存身份组
 func (s *ServerService) SaveIdentity(identity *models.Identity) error {
-	if _, err := s.IdentityRepo.SaveIdentity(identity); err != nil {
+	if _, err := s.IdentityRepo.SaveIdentity(orm.NewXorm().NewSession(), identity); err != nil {
 		return err
 	}
 	return nil
@@ -79,7 +80,7 @@ func (s *ServerService) SaveServerMember(serverMember *models.ServerMember) erro
 	for _, channel := range channels {
 		newServerMember.Channels = append(serverMember.Channels, channel.Name)
 	}
-	if _, err = s.ServerMemberRepo.NewAServerMember(newServerMember); err != nil {
+	if err = s.ServerMemberRepo.NewServerMember(orm.NewXorm().NewSession(), newServerMember); err != nil {
 		return err
 	}
 	return nil
@@ -95,7 +96,7 @@ func createNewServerMember(userInfo *models.User, member *models.ServerMember) *
 		UserEmail:  member.UserEmail,
 		InviteId:   member.InviteId,
 		CreateAt:   time.Now(),
-		IdentityId: int64(constant.No),
+		IdentityId: member.IdentityId,
 	}
 }
 
@@ -120,7 +121,8 @@ func (s *ServerService) SaveChannel(channel *models.Channel) error {
 		return err
 	}
 	if !flag {
-		if _, err = s.LabelRepo.SaveLabel(session, []*models.Label{createNewLabel(channel)}); err != nil {
+		var labels = []*models.Label{ToLabelModel(channel.ServerId, channel.Label)}
+		if _, err = s.LabelRepo.SaveLabel(session, labels); err != nil {
 			return err
 		}
 	}
@@ -159,11 +161,10 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 	}
 	// save server
 	var serverId int64
-	serverId, err = s.ServerRepo.SaveServer(session, createNewServer(owner.ID, email, server.Name))
-	if err != nil {
+	if serverId, err = s.ServerRepo.SaveServer(session, ToServerModel(owner.ID, owner.Email, server.Name)); err != nil {
 		return err
 	}
-	var v = make([]models.Label, 0)
+	var v = make([]*models.Label, 0)
 	for _, label := range server.Labels {
 		var exist bool
 		if exist, err = s.LabelRepo.ExistByName(label); err != nil {
@@ -173,14 +174,11 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 		if exist {
 			continue
 		}
-		v = append(v, models.Label{
-			ServerId: serverId,
-			Name:     label,
-		})
+		v = append(v, ToLabelModel(serverId, label))
 	}
 	// save label
 	if len(v) > 0 {
-		if _, err = session.Insert(&v); err != nil {
+		if _, err = session.Insert(v); err != nil {
 			session.Rollback()
 			return err
 		}
@@ -190,36 +188,28 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 		session.Rollback()
 		return err
 	}
+	// save server identity
+	var identityID int64
+	if identityID, err = s.IdentityRepo.SaveIdentity(session, ToIdentityModel(serverId)); err != nil {
+		session.Rollback()
+		return err
+	}
 	// join in server member
-	if _, err = session.Table(constant.ServerMemberTable).InsertOne(
-		createNewServerMember(owner, createSimpleServerMember(serverId, owner))); err != nil {
+	if err = s.ServerMemberRepo.NewServerMember(session, ToServerMemberModel(serverId, identityID, owner)); err != nil {
+		session.Rollback()
 		return err
 	}
 	// save server member role
-	if _, err = s.MemberRoleRepo.NewAMemberRole(session, &models.MemberRole{
-		ServerId:    serverId,
-		Name:        constant.OWNER,
-		Permissions: constant.Owner(),
-	}); err != nil {
+	if _, err = s.MemberRoleRepo.NewAMemberRole(session, ToMemberRoleModel(serverId)); err != nil {
+		session.Rollback()
+		return err
+	}
+	// update user serverIds
+	owner.ServerIds, _ = json.Marshal(serverId)
+	if _, err = session.Exec(`UPDATE "user" SET server_ids = ? WHERE email = ?`,
+		owner.ServerIds, owner.Email); err != nil {
 		return err
 	}
 	// commit
 	return session.Commit()
-}
-
-// createNewLabel
-func createNewLabel(channel *models.Channel) *models.Label {
-	return &models.Label{
-		ServerId: channel.ServerId,
-		Name:     channel.Label,
-	}
-}
-
-// createSimpleServerMember use in init server
-func createSimpleServerMember(serverId int64, owner *models.User) *models.ServerMember {
-	return &models.ServerMember{
-		ServerId:   serverId,
-		MemberName: owner.Name,
-		UserEmail:  owner.Email,
-	}
 }

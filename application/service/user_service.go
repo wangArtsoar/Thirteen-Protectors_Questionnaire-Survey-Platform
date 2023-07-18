@@ -58,7 +58,7 @@ func (srv *UserService) Register(request *vo.RegisterRequest) (*vo.RegisterRespo
 		return nil, err
 	}
 	// create a new User struct
-	id, newUser, err := createNewUser(request)
+	_, newUser, err := createNewUser(request)
 	// begin a database session
 	session := orm.NewXorm().NewSession()
 	if err = session.Begin(); err != nil {
@@ -69,16 +69,16 @@ func (srv *UserService) Register(request *vo.RegisterRequest) (*vo.RegisterRespo
 	if _, err = srv.UserRepo.SaveUser(session, newUser); err != nil {
 		return nil, err
 	}
-	// save server
-	var serverId int64
-	if serverId, err = srv.ServerRepo.SaveServer(session, createNewServer(id, request.Email, "")); err != nil {
-		return nil, err
-	}
-	// update user
-	newUser.ServerIds, _ = json.Marshal(serverId)
-	if _, err = session.Table(constant.UserTable).Where("email = ?", request.Email).Update(&newUser); err != nil {
-		return nil, err
-	}
+	//// save server
+	//var serverId int64
+	//if serverId, err = srv.ServerRepo.SaveServer(session, createNewServer(id, request.Email, "")); err != nil {
+	//	return nil, err
+	//}
+	//// update user
+	//newUser.ServerIds, _ = json.Marshal(serverId)
+	//if _, err = session.Table(constant.UserTable).Where("email = ?", request.Email).Update(&newUser); err != nil {
+	//	return nil, err
+	//}
 	// commit
 	if err = session.Commit(); err != nil {
 		return nil, err
@@ -91,19 +91,6 @@ func (srv *UserService) Register(request *vo.RegisterRequest) (*vo.RegisterRespo
 		Message:        "注册成功",
 		Authentication: constant.Header + token,
 	}, nil
-}
-
-// createNewServer
-func createNewServer(id, email, name string) *models.Server {
-	if len(name) < 1 {
-		name = constant.Default
-	}
-	return &models.Server{
-		Name:       name,
-		CreateAt:   time.Now(),
-		OwnerId:    id,
-		OwnerEmail: email,
-	}
 }
 
 // createNewUser

@@ -18,7 +18,7 @@ func ServerRequestToModel(request vo.ServerRequest) *models.Server {
 func IdentityRequestToModel(request vo.IdentityRequest) *models.Identity {
 	return &models.Identity{
 		Name:       request.Name,
-		ChannelId:  request.ChannelID,
+		ServerId:   request.ServerID,
 		MemberRole: request.MemberRole,
 	}
 }
@@ -27,7 +27,7 @@ func IdentityRequestToModel(request vo.IdentityRequest) *models.Identity {
 func MemberRoleRequestToModel(request vo.MemberRoleRequest) *models.MemberRole {
 	return &models.MemberRole{
 		Name:        request.Name,
-		ChannelId:   request.ChannelID,
+		ServerId:    request.ServerID,
 		Permissions: request.Permissions,
 	}
 }

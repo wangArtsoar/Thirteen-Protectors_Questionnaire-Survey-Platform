@@ -49,7 +49,7 @@ type ServerMember struct {
 // Identity 身份
 type Identity struct {
 	Id         int64  `json:"id" xorm:"'id' pk autoincr"`
-	ChannelId  int64  `json:"channel_id"`
+	ServerId   int64  `json:"server_id" xorm:"server_id"`
 	Name       string `json:"name" xorm:"name unique"`
 	MemberRole string `json:"member_role"`
 }

@@ -27,3 +27,9 @@ const (
 
 // Default 默认
 const Default string = "default"
+
+// Success 成功
+const Success string = "success"
+
+// Fail 失败
+const Fail string = "fail"

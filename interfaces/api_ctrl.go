@@ -82,7 +82,7 @@ func SaveServer() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
-		ctx.JSON(http.StatusOK, "success")
+		ctx.JSON(http.StatusOK, constant.Success)
 	}
 }
 
@@ -168,17 +168,22 @@ func SaveServerMember() gin.HandlerFunc {
 	}
 }
 
+// EditMemberRoleByMemberId 修改成员身份角色
+func EditMemberRoleByMemberId() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
+}
+
 // SaveIdentity 保存身份组
 func SaveIdentity() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var identityRequest vo.IdentityRequest
-		err := ctx.ShouldBindJSON(&identityRequest)
-		if err != nil {
+		if err := ctx.ShouldBindJSON(&identityRequest); err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
 			return
 		}
-		err = ioc.Container.ServerService.SaveIdentity(ass.IdentityRequestToModel(identityRequest))
-		if err != nil {
+		if err := ioc.Container.ServerService.SaveIdentity(ass.IdentityRequestToModel(identityRequest)); err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}

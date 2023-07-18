@@ -35,6 +35,7 @@ func Router() *gin.Engine {
 
 	serverMember := r.Group("/serverMember")
 	serverMember.POST("/save", common.TokenAuthMiddleware(), interfaces.SaveServerMember())
+	serverMember.PUT("/edit", common.TokenAuthMiddleware(), interfaces.EditMemberRoleByMemberId())
 
 	identity := r.Group("/identity")
 	identity.POST("/save", common.TokenAuthMiddleware(), interfaces.SaveIdentity())
