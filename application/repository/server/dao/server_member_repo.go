@@ -23,16 +23,16 @@ func (s *ServerMemberRepo) FindByUser(userEmail string) (*models.ServerMember, e
 	return &serverMember, nil
 }
 
-func (s *ServerMemberRepo) NewServerMember(session *xorm.Session, member *models.ServerMember) error {
+func (s *ServerMemberRepo) NewServerMember(session *xorm.Session, member *models.ServerMember) (int64, error) {
+	var lastInsertId int64
 	sql := `INSERT INTO server_member(
                         user_id, user_email, user_name, server_id, member_name, identity_id, channels, create_at) 
-			VALUES (?,?,?,?,?,?,?,?)`
-	_, err := session.Exec(sql, member.UserId, member.UserEmail, member.UserName, member.ServerId, member.MemberName,
-		member.IdentityId, pq.Array([]string{}), member.CreateAt)
-	if err != nil {
-		return err
+			VALUES (?,?,?,?,?,?,?,?) RETURNING id`
+	if _, err := session.SQL(sql, member.UserId, member.UserEmail, member.UserName, member.ServerId, member.MemberName,
+		member.IdentityId, pq.Array([]string{}), member.CreateAt).Get(&lastInsertId); err != nil {
+		return 0, err
 	}
-	return nil
+	return lastInsertId, nil
 }
 
 func (s *ServerMemberRepo) FindAllServerMember() ([]*models.ServerMember, error) {

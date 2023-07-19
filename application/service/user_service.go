@@ -66,7 +66,7 @@ func (srv *UserService) Register(request *vo.RegisterRequest) (*vo.RegisterRespo
 	}
 	defer session.Close()
 	// save user
-	if _, err = srv.UserRepo.SaveUser(session, newUser); err != nil {
+	if _, err = srv.UserRepo.SaveUser(session, &newUser, ""); err != nil {
 		return nil, err
 	}
 	//// save server

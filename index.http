@@ -3,7 +3,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-   "email" : "xiaoyi@icloud.com",
+   "email" : "xiaoyi@163.com",
    "password" : "123456"
 }
 
@@ -18,15 +18,15 @@ POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-  "name" : "xiaoyi",
-  "email" : "xiaoyi@icloud.com",
+  "name" : "xy",
+  "email" : "xiaoyi@163.com",
   "password" : "123456"
 }
 
 ### Logout
 GET http://localhost:8080/exam/logout
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODk2NjA5MTYsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIiwicm9sZSI6IlVTRVIifQ.DjkfLJpKuiOJPQ_dqfogqjEF6letg4CHY9af5wpmbH0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODk4NDA3MDcsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIiwicm9sZSI6IlVTRVIifQ.bR2EhxcoK4nfOlv8hXEh35m73_VSiNkxE87ipp55EOQ
 
 
 ### SaveServer
@@ -55,13 +55,13 @@ Content-Type: application/json
 
 ###
 POST http://localhost:8080/serverMember/save
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODkzMTU1ODYsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6IlN1cGVyQHN1cGVyLmNvbSIsInJvbGUiOiJTVVBFUiJ9.4LEjPZg_ZUA3_iewaKZJ6ddcxL50DovGTHbsxRxzBQk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODk4NDA3MzIsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUAxNjMuY29tIiwicm9sZSI6IlVTRVIifQ.IzWM-QdphzQ5-kUQfrer1BfK0IF_HWyKGVQIB_ZLtoo
 Content-Type: application/json
 
 {
-  "server_id" : 30,
-  "member_name" : "xiaoyi",
-  "invite_id" : ""
+  "server_id" : 44,
+  "member_name" : "xiaoyi_wyx",
+  "invite_id" : 0
 }
 
 

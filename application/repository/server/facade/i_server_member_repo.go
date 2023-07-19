@@ -6,7 +6,7 @@ import (
 )
 
 type IServerMemberRepo interface {
-	NewServerMember(session *xorm.Session, member *models.ServerMember) error
+	NewServerMember(session *xorm.Session, member *models.ServerMember) (int64, error)
 	FindAllServerMember() ([]*models.ServerMember, error)
 	FindAllServerMemberByServerId(serverId int64) ([]*models.ServerMember, error)
 	FindAllServerMemberByChannel(channel *models.Channel) ([]*models.ServerMember, error)

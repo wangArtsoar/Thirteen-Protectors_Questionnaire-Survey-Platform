@@ -12,8 +12,19 @@ var _ IUserRepo = new(UserRepo)
 type UserRepo struct {
 }
 
-func (u *UserRepo) SaveUser(session *xorm.Session, user models.User) (int64, error) {
+func (u *UserRepo) SaveUser(session *xorm.Session, user *models.User, serverId string) (int64, error) {
+	if len(user.ID) != 0 {
+		return updateUser(session, user, serverId)
+	}
 	return session.InsertOne(user)
+}
+
+func updateUser(session *xorm.Session, user *models.User, serverId string) (int64, error) {
+	sql := `UPDATE "user" SET server_ids = jsonb_set(server_ids::jsonb,'{0}',?) WHERE email = ? RETURNING id `
+	if _, err := session.Exec(sql, serverId, user.Email); err != nil {
+		return 0, err
+	}
+	return 1, nil
 }
 
 func (u *UserRepo) FindByEmail(email string) (*models.User, error) {

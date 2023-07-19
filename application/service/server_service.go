@@ -8,6 +8,7 @@ import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/orm"
 	"github.com/goccy/go-json"
+	"strconv"
 	"time"
 )
 
@@ -73,17 +74,32 @@ func (s *ServerService) SaveServerMember(serverMember *models.ServerMember) erro
 	// init ServerMember
 	newServerMember := createNewServerMember(userInfo, serverMember)
 	// find channel limit 10 from serverId
-	channels, err := s.ChannelRepo.FindAllByServerId(10, serverMember.ServerId)
-	if err != nil {
+	var channels []*models.Channel
+	if channels, err = s.ChannelRepo.FindAllByServerId(10, serverMember.ServerId); err != nil {
 		return err
 	}
 	for _, channel := range channels {
 		newServerMember.Channels = append(serverMember.Channels, channel.Name)
 	}
-	if err = s.ServerMemberRepo.NewServerMember(orm.NewXorm().NewSession(), newServerMember); err != nil {
+	session := orm.NewXorm().NewSession()
+	if err = session.Begin(); err != nil {
 		return err
 	}
-	return nil
+	defer session.Close()
+	defer func() {
+		if err != nil {
+			session.Rollback()
+		}
+	}()
+	// save serverMember
+	if _, err = s.ServerMemberRepo.NewServerMember(session, newServerMember); err != nil {
+		return err
+	}
+	// update user serversID
+	if _, err = s.UserRepo.SaveUser(session, userInfo, strconv.FormatInt(serverMember.ServerId, 10)); err != nil {
+		return err
+	}
+	return session.Commit()
 }
 
 // createNewServerMember
@@ -155,10 +171,15 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 	}
 	// begin a database session
 	session := orm.NewXorm().NewSession()
-	defer session.Close()
 	if err = session.Begin(); err != nil {
 		return err
 	}
+	defer session.Close()
+	defer func() {
+		if err != nil {
+			session.Rollback()
+		}
+	}()
 	// save server
 	var serverId int64
 	if serverId, err = s.ServerRepo.SaveServer(session, ToServerModel(owner.ID, owner.Email, server.Name)); err != nil {
@@ -168,7 +189,6 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 	for _, label := range server.Labels {
 		var exist bool
 		if exist, err = s.LabelRepo.ExistByName(label); err != nil {
-			session.Rollback()
 			return err
 		}
 		if exist {
@@ -179,35 +199,29 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 	// save label
 	if len(v) > 0 {
 		if _, err = session.Insert(v); err != nil {
-			session.Rollback()
 			return err
 		}
 	}
 	// update server
 	if err = s.ServerRepo.EditServerById(session, serverId, server); err != nil {
-		session.Rollback()
 		return err
 	}
 	// save server identity
 	var identityID int64
 	if identityID, err = s.IdentityRepo.SaveIdentity(session, ToIdentityModel(serverId)); err != nil {
-		session.Rollback()
 		return err
 	}
 	// join in server member
-	if err = s.ServerMemberRepo.NewServerMember(session, ToServerMemberModel(serverId, identityID, owner)); err != nil {
-		session.Rollback()
+	if _, err = s.ServerMemberRepo.NewServerMember(session, ToServerMemberModel(serverId, identityID, owner)); err != nil {
 		return err
 	}
 	// save server member role
 	if _, err = s.MemberRoleRepo.NewAMemberRole(session, ToMemberRoleModel(serverId)); err != nil {
-		session.Rollback()
 		return err
 	}
 	// update user serverIds
 	owner.ServerIds, _ = json.Marshal(serverId)
-	if _, err = session.Exec(`UPDATE "user" SET server_ids = ? WHERE email = ?`,
-		owner.ServerIds, owner.Email); err != nil {
+	if _, err = s.UserRepo.SaveUser(session, owner, ""); err != nil {
 		return err
 	}
 	// commit
