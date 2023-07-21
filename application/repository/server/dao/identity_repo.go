@@ -12,6 +12,11 @@ var _ facade.IIdentityRepo = new(IdentityRepo)
 type IdentityRepo struct {
 }
 
+// NewIdentityRepo 构造器
+func NewIdentityRepo() *IdentityRepo {
+	return &IdentityRepo{}
+}
+
 func (i *IdentityRepo) SaveIdentity(session *xorm.Session, identity *models.Identity) (int64, error) {
 	if _, err := session.InsertOne(identity); err != nil {
 		return 0, err

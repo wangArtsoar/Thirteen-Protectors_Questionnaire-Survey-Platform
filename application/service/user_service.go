@@ -20,8 +20,12 @@ import (
 var _ facade.IUserService = new(UserService)
 
 type UserService struct {
-	UserRepo   user.IUserRepo   `inject:"UserRepo"`
-	ServerRepo repo.IServerRepo `inject:"ServerRepo"`
+	UserRepo   user.IUserRepo   `dig:"UserRepo"`
+	ServerRepo repo.IServerRepo `dig:"ServerRepo"`
+}
+
+func NewUserService() facade.IUserService {
+	return &UserService{}
 }
 
 // Login return a loginResponse from given loginDto

@@ -12,6 +12,11 @@ var _ facade.IChannelRepo = new(ChannelRepo)
 type ChannelRepo struct {
 }
 
+// NewChannelRepo 构造器
+func NewChannelRepo() *ChannelRepo {
+	return &ChannelRepo{}
+}
+
 func (c *ChannelRepo) CreateChannel(session *xorm.Session, channel *models.Channel) (int64, error) {
 	return session.InsertOne(channel)
 }

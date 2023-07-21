@@ -25,7 +25,7 @@ func Login() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
 			return
 		}
-		loginResponse, err = ioc.Container.UserService.Login(&loginDto)
+		loginResponse, err = ioc.C.UserService.Login(&loginDto)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -54,7 +54,7 @@ func Register() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
 			return
 		}
-		response, err = ioc.Container.UserService.Register(&register)
+		response, err = ioc.C.UserService.Register(&register)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -77,7 +77,7 @@ func SaveServer() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("用户不存在"+err.Error()).Error())
 			return
 		}
-		err = ioc.Container.ServerService.SaveServer(ass.ServerRequestToModel(serverRequest), value.(string))
+		err = ioc.C.ServerService.SaveServer(ass.ServerRequestToModel(serverRequest), value.(string))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -94,7 +94,7 @@ func FindAllServerByUserEmail() gin.HandlerFunc {
 			ctx.JSON(http.StatusUnauthorized, errors.New("用户不存在").Error())
 			return
 		}
-		servers, err := ioc.Container.ServerService.FindAllServerByUserEmail(value.(string))
+		servers, err := ioc.C.ServerService.FindAllServerByUserEmail(value.(string))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -112,7 +112,7 @@ func FindAllChannelByServer() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
 			return
 		}
-		channels, err := ioc.Container.ServerService.FindAllChannelByServerId(serverId)
+		channels, err := ioc.C.ServerService.FindAllChannelByServerId(serverId)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -137,7 +137,7 @@ func SaveChannel() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("{channelRequest}参数错误"+err.Error()).Error())
 			return
 		}
-		if err = ioc.Container.ServerService.SaveChannel(ass.ChannelRequestToModel(
+		if err = ioc.C.ServerService.SaveChannel(ass.ChannelRequestToModel(
 			channelRequest, serverID)); err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -159,7 +159,7 @@ func SaveServerMember() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("user not be found").Error())
 			return
 		}
-		if err := ioc.Container.ServerService.SaveServerMember(ass.ServerMemberRequestToModel(
+		if err := ioc.C.ServerService.SaveServerMember(ass.ServerMemberRequestToModel(
 			serverMemberRequest, value.(string))); err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -183,7 +183,7 @@ func SaveIdentity() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
 			return
 		}
-		if err := ioc.Container.ServerService.SaveIdentity(ass.IdentityRequestToModel(identityRequest)); err != nil {
+		if err := ioc.C.ServerService.SaveIdentity(ass.IdentityRequestToModel(identityRequest)); err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
@@ -200,7 +200,7 @@ func SaveMemberRole() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
 			return
 		}
-		err = ioc.Container.ServerService.SaveMemberRole(ass.MemberRoleRequestToModel(memberRoleRequest))
+		err = ioc.C.ServerService.SaveMemberRole(ass.MemberRoleRequestToModel(memberRoleRequest))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -226,7 +226,7 @@ func SaveMessage() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("user not be found"+err.Error()).Error())
 			return
 		}
-		message, err = ioc.Container.ServerService.SaveMessage(ass.MessageRequestToModel(messageRequest), name.(string))
+		message, err = ioc.C.ServerService.SaveMessage(ass.MessageRequestToModel(messageRequest), name.(string))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -239,7 +239,7 @@ func SaveMessage() gin.HandlerFunc {
 func FindMessageByKeyword() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		keyword := ctx.Param("keyword")
-		messageList, err := ioc.Container.ServerService.FindMessageByKeyword(keyword)
+		messageList, err := ioc.C.ServerService.FindMessageByKeyword(keyword)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -256,7 +256,7 @@ func FindMessageLimit() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
 			return
 		}
-		messages, err := ioc.Container.ServerService.FindMessageByLimit(limit)
+		messages, err := ioc.C.ServerService.FindMessageByLimit(limit)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return

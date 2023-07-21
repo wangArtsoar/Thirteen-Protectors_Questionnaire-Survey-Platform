@@ -15,6 +15,11 @@ var _ facade.IServerRepo = new(ServerRepo)
 type ServerRepo struct {
 }
 
+// NewServerRepo 构造器
+func NewServerRepo() *ServerRepo {
+	return &ServerRepo{}
+}
+
 func (s *ServerRepo) ExistServerInNameAndOwner(serverName string, ownerEmail string) (bool, error) {
 	return orm.NewXorm().Where("Name = ? and owner_email = ?", serverName, ownerEmail).Exist(&models.Server{})
 }

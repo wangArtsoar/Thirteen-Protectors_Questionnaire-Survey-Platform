@@ -15,14 +15,18 @@ import (
 var _ facade.IServerService = new(ServerService)
 
 type ServerService struct {
-	ServerRepo       facade2.IServerRepo       `inject:"ServerRepo"`
-	ChannelRepo      facade2.IChannelRepo      `inject:"ChannelRepo"`
-	ServerMemberRepo facade2.IServerMemberRepo `inject:"ServerMemberRepo"`
-	IdentityRepo     facade2.IIdentityRepo     `inject:"IdentityRepo"`
-	LabelRepo        facade2.ILabelRepo        `inject:"LabelRepo"`
-	MemberRoleRepo   facade2.IMemberRoleRepo   `inject:"MemberRoleRepo"`
-	MessageRepo      facade2.IMessageRepo      `inject:"MessageRepo"`
-	UserRepo         user.IUserRepo            `inject:"UserRepo"`
+	ServerRepo       facade2.IServerRepo       `dig:"ServerRepo"`
+	ChannelRepo      facade2.IChannelRepo      `dig:"ChannelRepo"`
+	ServerMemberRepo facade2.IServerMemberRepo `dig:"ServerMemberRepo"`
+	IdentityRepo     facade2.IIdentityRepo     `dig:"IdentityRepo"`
+	LabelRepo        facade2.ILabelRepo        `dig:"LabelRepo"`
+	MemberRoleRepo   facade2.IMemberRoleRepo   `dig:"MemberRoleRepo"`
+	MessageRepo      facade2.IMessageRepo      `dig:"MessageRepo"`
+	UserRepo         user.IUserRepo            `dig:"UserRepo"`
+}
+
+func NewServerService() facade.IServerService {
+	return &ServerService{}
 }
 
 func (s *ServerService) FindMessageByLimit(limit int) ([]*models.Message, error) {

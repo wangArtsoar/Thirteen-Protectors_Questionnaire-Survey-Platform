@@ -13,6 +13,11 @@ var _ facade.IMemberRoleRepo = new(MemberRoleRepo)
 type MemberRoleRepo struct {
 }
 
+// NewMemberRoleRepo 构造器
+func NewMemberRoleRepo() *MemberRoleRepo {
+	return &MemberRoleRepo{}
+}
+
 func (m *MemberRoleRepo) NewAMemberRole(session *xorm.Session, role *models.MemberRole) (int64, error) {
 	var lastInsertId int64
 	sql := `INSERT INTO member_role(server_id, name, permissions) VALUES ($1,$2,$3) RETURNING id`

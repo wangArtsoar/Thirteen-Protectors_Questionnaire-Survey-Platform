@@ -14,6 +14,11 @@ var _ facade.IMessageRepo = new(MessageRepo)
 type MessageRepo struct {
 }
 
+// NewMessgeRepo 构造器
+func NewMessgeRepo() *MessageRepo {
+	return &MessageRepo{}
+}
+
 func (m *MessageRepo) SaveMessage(message *models.Message) (*models.Message, error) {
 	_, err := orm.NewXorm().InsertOne(message)
 	if err != nil {

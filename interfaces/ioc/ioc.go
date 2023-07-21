@@ -3,35 +3,53 @@ package ioc
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/dao"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/user"
-	service2 "Thirteen-Protectors_Questionnaire-Survey-Platform/application/service"
-	facade2 "Thirteen-Protectors_Questionnaire-Survey-Platform/application/service/facade"
-	"github.com/facebookgo/inject"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/service"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/service/facade"
+	"go.uber.org/dig"
 )
 
-var Container struct {
-	UserService   facade2.IUserService   `inject:"UserService"`
-	ServerService facade2.IServerService `inject:"ServerService"`
+var (
+	c = dig.New()
+	C Container
+)
+
+type Container struct {
+	UserService   facade.IUserService   `dig:"UserService"`
+	ServerService facade.IServerService `dig:"ServerService"`
 }
 
 func InitIoc() {
-	var g inject.Graph
-	err := g.Provide(
-		&inject.Object{Value: &Container},
-		&inject.Object{Value: &service2.UserService{}, Name: "UserService"},
-		&inject.Object{Value: &user.UserRepo{}, Name: "UserRepo"},
+	initRepos()
+	initService()
+	initCtrl()
+}
 
-		&inject.Object{Value: &service2.ServerService{}, Name: "ServerService"},
-		&inject.Object{Value: &dao.ServerRepo{}, Name: "ServerRepo"},
-		&inject.Object{Value: &dao.ChannelRepo{}, Name: "ChannelRepo"},
-		&inject.Object{Value: &dao.ServerMemberRepo{}, Name: "ServerMemberRepo"},
-		&inject.Object{Value: &dao.LabelRepo{}, Name: "LabelRepo"},
-		&inject.Object{Value: &dao.MemberRoleRepo{}, Name: "MemberRoleRepo"},
-		&inject.Object{Value: &dao.IdentityRepo{}, Name: "IdentityRepo"},
-		&inject.Object{Value: &dao.MessageRepo{}, Name: "MessageRepo"},
-	)
-	handleErr(err)
-	err = g.Populate()
-	handleErr(err)
+// 仓库依赖
+func initRepos() {
+	handleErr(c.Provide(dao.NewChannelRepo))
+	handleErr(c.Provide(dao.NewIdentityRepo))
+	handleErr(c.Provide(dao.NewLabelRepo))
+	handleErr(c.Provide(dao.NewMemberRoleRepo))
+	handleErr(c.Provide(dao.NewServerMemberRepo))
+	handleErr(c.Provide(dao.NewMessgeRepo))
+	handleErr(c.Provide(dao.NewServerRepo))
+	handleErr(c.Provide(user.NewUserRepo))
+}
+
+// 服务依赖
+func initService() {
+	handleErr(c.Provide(service.NewServerService))
+	handleErr(c.Provide(service.NewUserService))
+}
+
+// 容器接口
+func initCtrl() {
+	handleErr(c.Invoke(func(userService facade.IUserService) {
+		C.UserService = userService
+	}))
+	handleErr(c.Invoke(func(serverService facade.IServerService) {
+		C.ServerService = serverService
+	}))
 }
 
 // 错误处理

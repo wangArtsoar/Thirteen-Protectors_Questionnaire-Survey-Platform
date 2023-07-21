@@ -13,6 +13,10 @@ var _ facade.ILabelRepo = new(LabelRepo)
 type LabelRepo struct {
 }
 
+func NewLabelRepo() *LabelRepo {
+	return &LabelRepo{}
+}
+
 func (l *LabelRepo) ExistByName(name string) (bool, error) {
 	return orm.NewXorm().
 		Table(constant.LabelTable).

@@ -14,6 +14,10 @@ var _ facade.IServerMemberRepo = new(ServerMemberRepo)
 type ServerMemberRepo struct {
 }
 
+func NewServerMemberRepo() *ServerMemberRepo {
+	return &ServerMemberRepo{}
+}
+
 func (s *ServerMemberRepo) FindByUser(userEmail string) (*models.ServerMember, error) {
 	var serverMember models.ServerMember
 	_, err := orm.NewXorm().Where("user_email = ?", userEmail).Get(serverMember)
