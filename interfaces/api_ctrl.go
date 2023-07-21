@@ -2,12 +2,15 @@ package interfaces
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/common"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ass"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ioc"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/vo"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/goccy/go-json"
+	"github.com/samber/lo"
 	"net/http"
 	"strconv"
 )
@@ -86,8 +89,8 @@ func SaveServer() gin.HandlerFunc {
 	}
 }
 
-// FindAllServerByUserEmail 获取用户的服务器
-func FindAllServerByUserEmail() gin.HandlerFunc {
+// FindAllServerByUser 获取用户的服务器
+func FindAllServerByUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		value, exists := ctx.Get(constant.UserName)
 		if !exists {
@@ -187,7 +190,7 @@ func SaveIdentity() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
-		ctx.JSON(http.StatusOK, "success")
+		ctx.JSON(http.StatusOK, constant.Success)
 	}
 }
 
@@ -205,7 +208,7 @@ func SaveMemberRole() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
-		ctx.JSON(http.StatusOK, "success")
+		ctx.JSON(http.StatusOK, constant.Success)
 	}
 }
 
@@ -262,5 +265,27 @@ func FindMessageLimit() gin.HandlerFunc {
 			return
 		}
 		ctx.JSON(http.StatusOK, ass.MessageModelToResponseList(messages))
+	}
+}
+
+// FindJoinServerListByUser 获取用户加入的服务器列表
+func FindJoinServerListByUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var num, size int
+		_ = json.Unmarshal([]byte(ctx.Param("page_num")), num)
+		_ = json.Unmarshal([]byte(ctx.Param("page_size")), size)
+		value, exists := ctx.Get(constant.UserName)
+		if !exists {
+			return
+		}
+		page := common.PageRequest{PageSize: size, PageNum: num}
+		serverList, err := ioc.C.ServerService.FindJoinServerListByUser(value.(string), page)
+		if err != nil {
+			return
+		}
+		pageList := common.Pageable(lo.Map(serverList, func(server *models.Server, index int) any {
+			return *server
+		}))
+		ctx.JSON(http.StatusOK, pageList)
 	}
 }

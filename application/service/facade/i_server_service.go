@@ -1,6 +1,9 @@
 package facade
 
-import "Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+import (
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/common"
+)
 
 type IServerService interface {
 	SaveServer(server *models.Server, email string) error
@@ -13,4 +16,5 @@ type IServerService interface {
 	SaveMessage(message *models.Message, userEmail string) (*models.Message, error)
 	FindMessageByKeyword(keyword string) ([]*models.Message, error)
 	FindMessageByLimit(limit int) ([]*models.Message, error)
+	FindJoinServerListByUser(userEmail string, request common.PageRequest) ([]*models.Server, error)
 }

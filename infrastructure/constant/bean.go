@@ -33,3 +33,10 @@ const Success string = "success"
 
 // Fail 失败
 const Fail string = "fail"
+
+const (
+	Zero     = 0
+	One      = 1
+	PageNum  = 20
+	PageSize = 1
+)

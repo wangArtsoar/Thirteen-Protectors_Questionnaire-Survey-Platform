@@ -5,6 +5,7 @@ import (
 	facade2 "Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/user"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/service/facade"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/common"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/orm"
 	"github.com/goccy/go-json"
@@ -25,8 +26,9 @@ type ServerService struct {
 	UserRepo         user.IUserRepo            `dig:"UserRepo"`
 }
 
-func NewServerService() facade.IServerService {
-	return &ServerService{}
+func (s *ServerService) FindJoinServerListByUser(userEmail string, page common.PageRequest) ([]*models.Server, error) {
+	// TODO
+	panic("")
 }
 
 func (s *ServerService) FindMessageByLimit(limit int) ([]*models.Message, error) {
@@ -230,4 +232,8 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 	}
 	// commit
 	return session.Commit()
+}
+
+func NewServerService() facade.IServerService {
+	return &ServerService{}
 }

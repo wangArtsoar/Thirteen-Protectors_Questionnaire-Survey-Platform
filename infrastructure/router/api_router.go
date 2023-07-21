@@ -27,7 +27,8 @@ func Router() *gin.Engine {
 	server := r.Group("/server")
 	server.Use(common.TokenAuthMiddleware())
 	server.POST("/save", common.TokenAuthMiddleware(), interfaces.SaveServer())
-	server.GET("/findAllCurrentUser", common.TokenAuthMiddleware(), interfaces.FindAllServerByUserEmail())
+	server.GET("/findAllByCurrUser", common.TokenAuthMiddleware(), interfaces.FindAllServerByUser())
+	server.GET("/findJoinByCurrUser", common.TokenAuthMiddleware(), interfaces.FindJoinServerListByUser())
 
 	channel := r.Group("/channel")
 	channel.GET("/findAllByServerId", common.TokenAuthMiddleware(), interfaces.FindAllChannelByServer())
