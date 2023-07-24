@@ -2,13 +2,15 @@ package service
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+	dao "Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/dao"
 	facade2 "Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/user"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/service/facade"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/common"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/orm"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/page_list"
 	"github.com/goccy/go-json"
+	"github.com/samber/lo"
 	"strconv"
 	"time"
 )
@@ -16,19 +18,35 @@ import (
 var _ facade.IServerService = new(ServerService)
 
 type ServerService struct {
-	ServerRepo       facade2.IServerRepo       `dig:"ServerRepo"`
-	ChannelRepo      facade2.IChannelRepo      `dig:"ChannelRepo"`
-	ServerMemberRepo facade2.IServerMemberRepo `dig:"ServerMemberRepo"`
-	IdentityRepo     facade2.IIdentityRepo     `dig:"IdentityRepo"`
-	LabelRepo        facade2.ILabelRepo        `dig:"LabelRepo"`
-	MemberRoleRepo   facade2.IMemberRoleRepo   `dig:"MemberRoleRepo"`
-	MessageRepo      facade2.IMessageRepo      `dig:"MessageRepo"`
-	UserRepo         user.IUserRepo            `dig:"UserRepo"`
+	ServerRepo       facade2.IServerRepo       `dig:"method=dao.NewServerRepo"`
+	ChannelRepo      facade2.IChannelRepo      `dig:"method=dao.NewChannelRepo"`
+	ServerMemberRepo facade2.IServerMemberRepo `dig:"method=dao.NewServerMemberRepo"`
+	IdentityRepo     facade2.IIdentityRepo     `dig:"method=dao.NewIdentityRepo"`
+	LabelRepo        facade2.ILabelRepo        `dig:"method=dao.NewLabelRepo"`
+	MemberRoleRepo   facade2.IMemberRoleRepo   `dig:"method=dao.NewMemberRoleRepo"`
+	MessageRepo      facade2.IMessageRepo      `dig:"method=dao.NewMessageRepo"`
+	UserRepo         user.IUserRepo            `dig:"method=dao.NewUserRepo"`
 }
 
-func (s *ServerService) FindJoinServerListByUser(userEmail string, page common.PageRequest) ([]*models.Server, error) {
-	// TODO
-	panic("")
+func (s *ServerService) FindJoinServerListByUser(userEmail string, page page_list.PageRequest) (
+	page_list.PageList[[]models.Server], error) {
+	serverMember, err := s.ServerMemberRepo.FindByUser(userEmail)
+	if err != nil {
+		return page_list.PageList[[]models.Server]{}, err
+	}
+	serverIds := lo.Map(serverMember, func(item models.ServerMember, index int) int64 {
+		return item.ServerId
+	})
+	servers, err := s.ServerRepo.FindServerInIds(serverIds)
+	if err != nil {
+		return page_list.PageList[[]models.Server]{}, err
+	}
+	if len(serverMember) < page.PageNum*page.PageSize {
+		return page_list.Pageable(servers, page), nil
+	}
+	chunk := lo.Chunk(servers, len(servers)/page.PageSize)
+	i := chunk[page.PageNum]
+	return page_list.Pageable(i, page), nil
 }
 
 func (s *ServerService) FindMessageByLimit(limit int) ([]*models.Message, error) {
@@ -45,7 +63,7 @@ func (s *ServerService) SaveMessage(message *models.Message, userEmail string) (
 	if err != nil {
 		return nil, err
 	}
-	message = settingMessage(message, member)
+	message = settingMessage(message, &member[0])
 	return s.MessageRepo.SaveMessage(message)
 }
 
@@ -235,5 +253,13 @@ func (s *ServerService) SaveServer(server *models.Server, email string) error {
 }
 
 func NewServerService() facade.IServerService {
-	return &ServerService{}
+	return &ServerService{
+		ServerRepo:       dao.NewServerRepo(),
+		ChannelRepo:      dao.NewChannelRepo(),
+		ServerMemberRepo: dao.NewServerMemberRepo(),
+		IdentityRepo:     dao.NewIdentityRepo(),
+		LabelRepo:        dao.NewLabelRepo(),
+		MemberRoleRepo:   dao.NewMemberRoleRepo(),
+		MessageRepo:      dao.NewMessgeRepo(),
+		UserRepo:         user.NewUserRepo()}
 }

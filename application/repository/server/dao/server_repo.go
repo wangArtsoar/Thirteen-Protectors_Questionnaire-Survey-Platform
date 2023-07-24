@@ -15,6 +15,11 @@ var _ facade.IServerRepo = new(ServerRepo)
 type ServerRepo struct {
 }
 
+func (s *ServerRepo) FindServerInIds(ids []int64) ([]models.Server, error) {
+	var servers []models.Server
+	return servers, orm.NewXorm().In("id", ids).Find(&servers)
+}
+
 // NewServerRepo 构造器
 func NewServerRepo() *ServerRepo {
 	return &ServerRepo{}

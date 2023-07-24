@@ -25,7 +25,7 @@ func TestIoc(t *testing.T) {
 	//	panic(err)
 	//}
 	ioc.InitIoc()
-	userService := ioc.Container.UserService
+	userService := ioc.C.UserService
 	if userService == nil {
 		fmt.Println("获取不到")
 	} else {

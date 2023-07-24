@@ -2,6 +2,7 @@ package service
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/dao"
 	repo "Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/user"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/service/facade"
@@ -25,7 +26,7 @@ type UserService struct {
 }
 
 func NewUserService() facade.IUserService {
-	return &UserService{}
+	return &UserService{user.NewUserRepo(), dao.NewServerRepo()}
 }
 
 // Login return a loginResponse from given loginDto

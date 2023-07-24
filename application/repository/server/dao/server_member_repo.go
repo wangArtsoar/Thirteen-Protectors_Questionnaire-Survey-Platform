@@ -18,13 +18,10 @@ func NewServerMemberRepo() *ServerMemberRepo {
 	return &ServerMemberRepo{}
 }
 
-func (s *ServerMemberRepo) FindByUser(userEmail string) (*models.ServerMember, error) {
-	var serverMember models.ServerMember
-	_, err := orm.NewXorm().Where("user_email = ?", userEmail).Get(serverMember)
-	if err != nil {
-		return nil, err
-	}
-	return &serverMember, nil
+func (s *ServerMemberRepo) FindByUser(userEmail string) ([]models.ServerMember, error) {
+	var serverMember []models.ServerMember
+	return serverMember, orm.NewXorm().Cols("id", "member_name", "user_name", "server_id").
+		Where("user_email = ?", userEmail).Find(&serverMember)
 }
 
 func (s *ServerMemberRepo) NewServerMember(session *xorm.Session, member *models.ServerMember) (int64, error) {

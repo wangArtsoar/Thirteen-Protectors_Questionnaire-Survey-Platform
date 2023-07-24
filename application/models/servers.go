@@ -37,8 +37,8 @@ type ServerMember struct {
 	ServerId   int64     `json:"server_id"`
 	MemberName string    `json:"member_name"`
 	IdentityId int64     `json:"identity_id" xorm:"identity_id unique"`
-	InviteId   int64     `json:"invite_id"` // 邀请人
-	Channels   []string  `json:"channels"`  // 频道列表
+	InviteId   int64     `json:"invite_id"`                // 邀请人
+	Channels   []string  `json:"channels" xorm:"channels"` // 频道列表
 	CreateAt   time.Time `json:"create_at"`
 	IsDelete   int       `json:"is_delete"`
 	IsRobot    int       `json:"is_robot"`   // 是否为机器人

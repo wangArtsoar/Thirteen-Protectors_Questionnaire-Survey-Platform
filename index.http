@@ -86,3 +86,8 @@ Content-Type: application/json
   "server_id" : 30,
   "member_role" : "adm"
 }
+
+###
+GET http://localhost:8080/server/findJoinByCurrUser
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2OTAyNzAyNzMsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUAxNjMuY29tIiwicm9sZSI6IlVTRVIifQ.hck00p1FPZ0WBdoC8Qif0T-6a1CHFDLBuCabTRPSfoc
