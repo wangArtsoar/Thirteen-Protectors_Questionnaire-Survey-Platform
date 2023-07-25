@@ -20,3 +20,10 @@ type MessageResponse struct {
 	SendName string    `json:"send_name"`
 	SendId   int64     `json:"send_id"`
 }
+
+// ServerResponse 服务器成员响应体
+type ServerResponse struct {
+	ID     int64    `json:"id"`
+	Name   string   `json:"member_name"`
+	Labels []string `json:"labels"`
+}

@@ -2,13 +2,13 @@ package service
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
-	dao "Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/dao"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/dao"
 	facade2 "Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/user"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/service/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/orm"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/page_list"
+	pl "Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/page_list"
 	"github.com/goccy/go-json"
 	"github.com/samber/lo"
 	"strconv"
@@ -28,25 +28,19 @@ type ServerService struct {
 	UserRepo         user.IUserRepo            `dig:"method=dao.NewUserRepo"`
 }
 
-func (s *ServerService) FindJoinServerListByUser(userEmail string, page page_list.PageRequest) (
-	page_list.PageList[[]models.Server], error) {
+func (s *ServerService) FindJoinServerListByUser(userEmail string, page pl.PageRequest) (*pl.PageList[models.Server], error) {
 	serverMember, err := s.ServerMemberRepo.FindByUser(userEmail)
 	if err != nil {
-		return page_list.PageList[[]models.Server]{}, err
+		return nil, err
 	}
 	serverIds := lo.Map(serverMember, func(item models.ServerMember, index int) int64 {
 		return item.ServerId
 	})
-	servers, err := s.ServerRepo.FindServerInIds(serverIds)
+	servers, err := s.ServerRepo.FindServerInIds(serverIds, page)
 	if err != nil {
-		return page_list.PageList[[]models.Server]{}, err
+		return nil, err
 	}
-	if len(serverMember) < page.PageNum*page.PageSize {
-		return page_list.Pageable(servers, page), nil
-	}
-	chunk := lo.Chunk(servers, len(servers)/page.PageSize)
-	i := chunk[page.PageNum]
-	return page_list.Pageable(i, page), nil
+	return &servers, nil
 }
 
 func (s *ServerService) FindMessageByLimit(limit int) ([]*models.Message, error) {

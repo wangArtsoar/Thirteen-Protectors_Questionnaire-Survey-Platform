@@ -5,6 +5,7 @@ import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/repository/server/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/orm"
+	pl "Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/page_list"
 	"github.com/go-xorm/xorm"
 	"github.com/lib/pq"
 	"time"
@@ -15,9 +16,13 @@ var _ facade.IServerRepo = new(ServerRepo)
 type ServerRepo struct {
 }
 
-func (s *ServerRepo) FindServerInIds(ids []int64) ([]models.Server, error) {
+func (s *ServerRepo) FindServerInIds(ids []int64, page pl.PageRequest) (pl.PageList[models.Server], error) {
 	var servers []models.Server
-	return servers, orm.NewXorm().In("id", ids).Find(&servers)
+	err := orm.NewXorm().In("id", ids).Limit(page.PageSize, page.PageNum-1).Find(&servers)
+	if err != nil {
+		return pl.PageList[models.Server]{}, err
+	}
+	return pl.Pageable(servers, page, len(ids)), nil
 }
 
 // NewServerRepo 构造器

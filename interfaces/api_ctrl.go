@@ -269,17 +269,17 @@ func FindMessageLimit() gin.HandlerFunc {
 // FindJoinServerListByUser 获取用户加入的服务器列表
 func FindJoinServerListByUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		pageRequest := page_list.DefaultPage(ctx.Param("page_num"), ctx.Param("page_size"))
+		pageRequest := page_list.DefaultPage(ctx.Query("page_num"), ctx.Query("page_size"))
 		value, exists := ctx.Get(constant.UserName)
 		if !exists {
 			ctx.JSON(http.StatusBadRequest, errors.New("user not be found").Error())
 			return
 		}
-		serverPage, err := ioc.C.ServerService.FindJoinServerListByUser(value.(string), pageRequest)
+		serverList, err := ioc.C.ServerService.FindJoinServerListByUser(value.(string), pageRequest)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
-		ctx.JSON(http.StatusOK, serverPage)
+		ctx.JSON(http.StatusOK, ass.PageServerModelToServerResponse(serverList))
 	}
 }

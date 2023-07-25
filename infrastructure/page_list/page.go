@@ -6,21 +6,24 @@ import (
 )
 
 type PageRequest struct {
-	PageNum  int
-	PageSize int
+	PageNum     int `json:"page_num"`
+	PageSize    int `json:"page_size"`
+	CurrenTotal int `json:"curren_total"`
 }
 
-type PageList[Body any] struct {
-	PageNum  int `json:"page_num"`
-	PageSize int `json:"page_size"`
-	Body     any `json:"body"`
+type PageList[T any] struct {
+	PageNum   int `json:"page_num"`
+	PageSize  int `json:"page_size"`
+	PageTotal int `json:"page_total"`
+	Body      []T `json:"body"`
 }
 
-func Pageable[T any](M T, request PageRequest) PageList[T] {
+func Pageable[T any](M []T, request PageRequest, count int) PageList[T] {
 	return PageList[T]{
-		PageNum:  request.PageNum,
-		PageSize: request.PageSize,
-		Body:     M,
+		PageNum:   request.PageNum,
+		PageSize:  request.PageSize,
+		PageTotal: count,
+		Body:      M,
 	}
 }
 
@@ -37,7 +40,8 @@ func DefaultPage(numStr, sizeStr string) PageRequest {
 		json.Unmarshal([]byte(sizeStr), &size)
 	}
 	return PageRequest{
-		PageNum:  num,
-		PageSize: size,
+		PageNum:     num,
+		PageSize:    size,
+		CurrenTotal: num * size,
 	}
 }

@@ -2,6 +2,7 @@ package facade
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+	pl "Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/page_list"
 	"github.com/go-xorm/xorm"
 )
 
@@ -11,5 +12,5 @@ type IServerRepo interface {
 	FindServerByName(serverName string) ([]*models.Server, error)
 	EditServerById(session *xorm.Session, Id int64, server *models.Server) error
 	ExistServerInNameAndOwner(serverName string, ownerEmail string) (bool, error)
-	FindServerInIds(ids []int64) ([]models.Server, error)
+	FindServerInIds(ids []int64, request pl.PageRequest) (pl.PageList[models.Server], error)
 }
