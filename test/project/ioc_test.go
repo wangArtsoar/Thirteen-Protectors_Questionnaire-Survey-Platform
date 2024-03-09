@@ -1,4 +1,4 @@
-package main
+package project
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ioc"
@@ -25,7 +25,7 @@ func TestIoc(t *testing.T) {
 	//	panic(err)
 	//}
 	ioc.InitIoc()
-	userService := ioc.C.UserService
+	userService := ioc.Container.UserService
 	if userService == nil {
 		fmt.Println("获取不到")
 	} else {

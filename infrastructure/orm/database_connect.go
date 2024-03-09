@@ -19,7 +19,7 @@ var (
 )
 
 func NewXorm() *xorm.Engine {
-	connStr := "postgres://postgres:xiaoyi@localhost/questionnaire_survey?sslmode=disable"
+	connStr := "postgres://postgres:xiaoyi_wyx@localhost/questionnaire_survey?sslmode=disable"
 	engine, err = xorm.NewEngine("postgres", connStr)
 	if err != nil {
 		log.Fatalf("ping to db fail! err:%+v", err)
@@ -47,13 +47,15 @@ func NewXorm() *xorm.Engine {
 	}
 	if count <= 0 {
 		role := constant.Super()
-		roleJSON, err := json.Marshal(role)
+		roleJSON, _ := json.Marshal(role)
+		serverIds, _ := json.Marshal([]int{})
 		_, err = engine.InsertOne(&models.User{
-			ID:       uuid.New().String(),
-			Name:     "SUPER",
-			Email:    "Super@super.com",
-			Role:     roleJSON,
-			CreateAt: time.Now(),
+			ID:        uuid.New().String(),
+			Name:      "SUPER",
+			Email:     "Super@super.com",
+			Role:      roleJSON,
+			CreateAt:  time.Now(),
+			ServerIds: serverIds,
 		})
 		if err != nil {
 			log.Println("初始化角色失败" + err.Error())

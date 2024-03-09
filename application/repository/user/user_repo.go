@@ -25,7 +25,7 @@ func (u *UserRepo) SaveUser(session *xorm.Session, user *models.User, serverId s
 }
 
 func updateUser(session *xorm.Session, user *models.User, serverId string) (int64, error) {
-	sql := `UPDATE "user" SET server_ids = jsonb_insert(server_ids::jsonb,'{-1}',?::jsonb) WHERE email = ?`
+	sql := `UPDATE "user" SET server_ids = jsonb_insert(server_ids::jsonb,'{-1}',?::jsonb,true) WHERE email = ?`
 	if _, err := session.Exec(sql, serverId, user.Email); err != nil {
 		return 0, err
 	}

@@ -16,6 +16,6 @@ func TestPage(T *testing.T) {
 	if err != nil {
 		T.Error(err)
 	}
-	pageable := page_list.Pageable(labels, page)
+	pageable := page_list.Pageable(labels, page, 10)
 	fmt.Println(pageable)
 }
