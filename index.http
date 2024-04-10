@@ -3,14 +3,14 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-   "email" : "xiaoyi@163.com",
+   "email" : "xiaoyi@icloud.com",
    "password" : "123456"
 }
 
 ### Demo
 GET http://localhost:8080/exam/demo
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODk3NTE2MzAsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIiwicm9sZSI6IlVTRVIifQ.isYQqjc46_vagrKCtXHqHwj536-0iX5w8G5qrYTtIm0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE3MDY5NDMzNzcsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIiwicm9sZSI6IlVTRVIifQ.9m1MyJ3MvV3aCux5JaoDK2m55qkjPU8Ft_bkpqd45Tw
 
 
 ### Register
@@ -55,11 +55,11 @@ Content-Type: application/json
 
 ###
 POST http://localhost:8080/serverMember/save
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2ODk4NDA3MzIsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUAxNjMuY29tIiwicm9sZSI6IlVTRVIifQ.IzWM-QdphzQ5-kUQfrer1BfK0IF_HWyKGVQIB_ZLtoo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE3MDkxOTAyMDYsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUBpY2xvdWQuY29tIiwicm9sZSI6IlVTRVIifQ.1AV46lSDnTN5nC6C07XN82t85SJTMTIFQYQsPLJRd7w
 Content-Type: application/json
 
 {
-  "server_id" : 44,
+  "server_id" : 33,
   "member_name" : "xiaoyi_wyx",
   "invite_id" : 0
 }
@@ -91,3 +91,8 @@ Content-Type: application/json
 GET http://localhost:8080/server/findJoinByCurrUser?page_num=1&page_size=1
 Accept: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2OTAyNzAyNzMsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUAxNjMuY29tIiwicm9sZSI6IlVTRVIifQ.hck00p1FPZ0WBdoC8Qif0T-6a1CHFDLBuCabTRPSfoc
+
+###
+GET http://localhost:8080/debug/pprof/heap
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHRyYWN0QXQiOjE2OTE2NTQ0NjMsImlzTG9nZ2VkT3V0IjpmYWxzZSwibmFtZSI6InhpYW95aUAxNjMuY29tIiwicm9sZSI6IlVTRVIifQ.LUogWom2AaeKnHaIvYAwiuv9sJXH4ctn2PGuUTR8Al8

@@ -1,12 +1,12 @@
 package interfaces
 
 import (
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/application/models"
+	ass2 "Thirteen-Protectors_Questionnaire-Survey-Platform/application/ass"
+	vo2 "Thirteen-Protectors_Questionnaire-Survey-Platform/application/vo"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/constant"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/page_list"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ass"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/persistence/models"
+	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/util"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ioc"
-	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/vo"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -17,9 +17,9 @@ import (
 func Login() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var (
-			loginDto      vo.LoginDto
+			loginDto      vo2.LoginDto
 			err           error
-			loginResponse *vo.LoginResponse
+			loginResponse *vo2.LoginResponse
 		)
 		err = ctx.ShouldBindJSON(&loginDto)
 		if err != nil {
@@ -46,9 +46,9 @@ func Demo() gin.HandlerFunc {
 func Register() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var (
-			register vo.RegisterRequest
+			register vo2.RegisterRequest
 			err      error
-			response *vo.RegisterResponse
+			response *vo2.RegisterResponse
 		)
 		err = ctx.ShouldBindJSON(&register)
 		if err != nil {
@@ -67,7 +67,7 @@ func Register() gin.HandlerFunc {
 // SaveServer 创建服务器
 func SaveServer() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var serverRequest vo.ServerRequest
+		var serverRequest vo2.ServerRequest
 		err := ctx.ShouldBindJSON(&serverRequest)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
@@ -78,7 +78,7 @@ func SaveServer() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("用户不存在"+err.Error()).Error())
 			return
 		}
-		err = ioc.C.ServerService.SaveServer(ass.ServerRequestToModel(serverRequest), value.(string))
+		err = ioc.C.ServerService.SaveServer(ass2.ServerRequestToModel(serverRequest), value.(string))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -126,7 +126,7 @@ func FindAllChannelByServer() gin.HandlerFunc {
 func SaveChannel() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var (
-			channelRequest vo.ChannelRequest
+			channelRequest vo2.ChannelRequest
 			serverID       int64
 			err            error
 		)
@@ -138,7 +138,7 @@ func SaveChannel() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("{channelRequest}参数错误"+err.Error()).Error())
 			return
 		}
-		if err = ioc.C.ServerService.SaveChannel(ass.ChannelRequestToModel(
+		if err = ioc.C.ServerService.SaveChannel(ass2.ChannelRequestToModel(
 			channelRequest, serverID)); err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -150,7 +150,7 @@ func SaveChannel() gin.HandlerFunc {
 // SaveServerMember 保存服务器人员(加入服务器)
 func SaveServerMember() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var serverMemberRequest vo.ServerMemberRequest
+		var serverMemberRequest vo2.ServerMemberRequest
 		if err := ctx.ShouldBindJSON(&serverMemberRequest); err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("参数错误"+err.Error()).Error())
 			return
@@ -160,7 +160,7 @@ func SaveServerMember() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("user not be found").Error())
 			return
 		}
-		if err := ioc.C.ServerService.SaveServerMember(ass.ServerMemberRequestToModel(
+		if err := ioc.C.ServerService.SaveServerMember(ass2.ServerMemberRequestToModel(
 			serverMemberRequest, value.(string))); err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -179,12 +179,12 @@ func EditMemberRoleByMemberId() gin.HandlerFunc {
 // SaveIdentity 保存身份组
 func SaveIdentity() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var identityRequest vo.IdentityRequest
+		var identityRequest vo2.IdentityRequest
 		if err := ctx.ShouldBindJSON(&identityRequest); err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
 			return
 		}
-		if err := ioc.C.ServerService.SaveIdentity(ass.IdentityRequestToModel(identityRequest)); err != nil {
+		if err := ioc.C.ServerService.SaveIdentity(ass2.IdentityRequestToModel(identityRequest)); err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
@@ -195,13 +195,13 @@ func SaveIdentity() gin.HandlerFunc {
 // SaveMemberRole 保存身份角色
 func SaveMemberRole() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var memberRoleRequest vo.MemberRoleRequest
+		var memberRoleRequest vo2.MemberRoleRequest
 		err := ctx.ShouldBindJSON(&memberRoleRequest)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, errors.New("{serverID}参数错误"+err.Error()).Error())
 			return
 		}
-		err = ioc.C.ServerService.SaveMemberRole(ass.MemberRoleRequestToModel(memberRoleRequest))
+		err = ioc.C.ServerService.SaveMemberRole(ass2.MemberRoleRequestToModel(memberRoleRequest))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
@@ -214,7 +214,7 @@ func SaveMemberRole() gin.HandlerFunc {
 func SaveMessage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var (
-			messageRequest vo.MessageRequest
+			messageRequest vo2.MessageRequest
 			message        *models.Message
 		)
 		err := ctx.ShouldBindJSON(&messageRequest)
@@ -227,12 +227,12 @@ func SaveMessage() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, errors.New("user not be found").Error())
 			return
 		}
-		message, err = ioc.C.ServerService.SaveMessage(ass.MessageRequestToModel(messageRequest), name.(string))
+		message, err = ioc.C.ServerService.SaveMessage(ass2.MessageRequestToModel(messageRequest), name.(string))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
-		ctx.JSON(http.StatusOK, ass.MessageModelToResponse(message))
+		ctx.JSON(http.StatusOK, ass2.MessageModelToResponse(message))
 	}
 }
 
@@ -262,14 +262,14 @@ func FindMessageLimit() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
-		ctx.JSON(http.StatusOK, ass.MessageModelToResponseList(messages))
+		ctx.JSON(http.StatusOK, ass2.MessageModelToResponseList(messages))
 	}
 }
 
 // FindJoinServerListByUser 获取用户加入的服务器列表
 func FindJoinServerListByUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		pageRequest := page_list.DefaultPage(ctx.Query("page_num"), ctx.Query("page_size"))
+		pageRequest := util.DefaultPage(ctx.Query("page_num"), ctx.Query("page_size"))
 		value, exists := ctx.Get(constant.UserName)
 		if !exists {
 			ctx.JSON(http.StatusBadRequest, errors.New("user not be found").Error())
@@ -280,6 +280,6 @@ func FindJoinServerListByUser() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, errors.New("内部错误"+err.Error()).Error())
 			return
 		}
-		ctx.JSON(http.StatusOK, ass.PageServerModelToServerResponse(serverList))
+		ctx.JSON(http.StatusOK, ass2.PageServerModelToServerResponse(serverList))
 	}
 }
