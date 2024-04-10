@@ -8,7 +8,6 @@ import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/persistence/repository/server/facade"
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/persistence/repository/user"
 	pl "Thirteen-Protectors_Questionnaire-Survey-Platform/infrastructure/util"
-	"errors"
 	"github.com/goccy/go-json"
 	"github.com/samber/lo"
 	"strconv"
@@ -56,9 +55,6 @@ func (s *ServerService) SaveMessage(message *model.Message, userEmail string) (*
 	member, err := s.ServerMemberRepo.FindByUser(userEmail)
 	if err != nil {
 		return nil, err
-	}
-	if len(member) == 0 {
-		return nil, errors.New("no member found for the given user email")
 	}
 	message = settingMessage(message, &member[0])
 	return s.MessageRepo.SaveMessage(message)
