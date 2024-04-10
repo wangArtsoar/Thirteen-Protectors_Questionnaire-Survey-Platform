@@ -1,4 +1,4 @@
-package main
+package project
 
 import (
 	"Thirteen-Protectors_Questionnaire-Survey-Platform/interfaces/ioc"

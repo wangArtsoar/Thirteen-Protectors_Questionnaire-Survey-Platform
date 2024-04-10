@@ -45,7 +45,9 @@ func Manage() (string, any) {
 
 // User return user permissions
 func User() any {
-	return map[string]any{"USER": []string{}}
+	return map[string]any{
+		"USER": []string{},
+	}
 }
 
 // Customize return customize permissions
@@ -54,4 +56,9 @@ func Customize(roleName string, permissions ...string) any {
 	return map[string]any{
 		roleName: permissions,
 	}
+}
+
+// GetUserRole return user role name
+func GetUserRole() string {
+	return "USER"
 }

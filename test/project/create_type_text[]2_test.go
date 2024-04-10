@@ -1,7 +1,7 @@
-package main
+package project
 
 import (
-	"fmt"
+	"encoding/json"
 	"log"
 	"testing"
 
@@ -9,12 +9,7 @@ import (
 	"xorm.io/xorm"
 )
 
-type MyStruct struct {
-	Id      int64
-	MySlice []string `xorm:"text"`
-}
-
-func TestCreate(t *testing.T) {
+func TestTypeText2(t *testing.T) {
 	engine, err := xorm.NewEngine("postgres",
 		"user=postgres password=xiaoyi dbname=questionnaire_survey sslmode=disable")
 	if err != nil {
@@ -26,19 +21,15 @@ func TestCreate(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	mySlice := []string{"a", "b", "c"}
-	_, err = engine.Insert(&MyStruct{MySlice: mySlice})
+	jsonStr := `{"MySlice": ["a", "b", "c"]}`
+	var myStruct MyStruct
+	err = json.Unmarshal([]byte(jsonStr), &myStruct)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var myStructs []MyStruct
-	err = engine.Find(&myStructs)
+	_, err = engine.Insert(&myStruct)
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	for _, myStruct := range myStructs {
-		fmt.Println(myStruct.MySlice)
 	}
 }
